@@ -93,4 +93,4 @@ INCLUDE(external/CMakeLists.txt)
 
 SET(gtest_force_shared_crt on)
 INCLUDE(CTest)
-ADD_SUBDIRECTORY(src/tests)
+ADD_SUBDIRECTORY(tests)
