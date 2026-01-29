@@ -3,4 +3,4 @@
 
 #include "Plugin.h"
 
-extern std::unique_ptr<loa::LoaPlugin> Plugin;
+extern std::unique_ptr<vatger::VatgerPlugin> Plugin;

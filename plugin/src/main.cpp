@@ -6,10 +6,10 @@
 #include "main.h"
 #include "plugin.h"
 
-std::unique_ptr<loa::LoaPlugin> Plugin;
+std::unique_ptr<vatger::VatgerPlugin> Plugin;
 
 void __declspec(dllexport) EuroScopePlugInInit(EuroScopePlugIn::CPlugIn **ppPlugInInstance) {
-    Plugin.reset(new loa::LoaPlugin());
+    Plugin.reset(new vatger::VatgerPlugin());
     *ppPlugInInstance = Plugin.get();
 }
 

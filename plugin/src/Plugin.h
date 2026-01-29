@@ -9,15 +9,15 @@
 
 #include "log/ILogger.h"
 
-namespace loa {
-class LoaPlugin : public EuroScopePlugIn::CPlugIn {
+namespace vatger {
+class VatgerPlugin : public EuroScopePlugIn::CPlugIn {
    private:
     std::shared_ptr<logging::ILogger> m_logger;
 
    public:
-    LoaPlugin();
-    ~LoaPlugin();
+    VatgerPlugin();
+    ~VatgerPlugin();
 
-    void DisplayMessage(const std::string &message, const std::string &sender = "LoaPlugin");
+    void DisplayMessage(const std::string &message, const std::string &sender = "VatgerPlugin");
 };
-}  // namespace loa
+}  // namespace vatger

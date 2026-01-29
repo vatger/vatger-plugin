@@ -2,7 +2,7 @@
 // clang-format off
 // prevents C2018 during compilation
 namespace {
-const char *PLUGIN_NAME{ "LoA Plugin" };
+const char *PLUGIN_NAME{ "VATGER Plugin" };
 const char *PLUGIN_VERSION{ "@CMAKE_PROJECT_VERSION@" };
 const char *PLUGIN_AUTHOR{ "VATGER" };
 const char *PLUGIN_LICENSE{ "GPLv3" };

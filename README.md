@@ -1,2 +1,2 @@
-# loa-plugin
+# VATGER Euroscope Plugin
 
