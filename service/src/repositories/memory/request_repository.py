@@ -31,3 +31,16 @@ class MemoryRequestRepository(RequestRepositoryInterface):
             del self.requests[id_]
             return True
         return False
+
+    def get_by_callsign(self, callsign: str) -> SilentRequestModel | None:
+        return next(
+            (req for req in self.requests.values() if req.callsign == callsign),
+            None,
+        )
+
+    def delete_by_callsign(self, callsign: str) -> bool:
+        for id_, req in list(self.requests.items()):
+            if req.callsign == callsign:
+                del self.requests[id_]
+                return True
+        return False

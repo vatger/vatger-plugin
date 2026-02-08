@@ -2,7 +2,9 @@ from models.request import SilentRequestModel
 from repositories.memory.request_repository import MemoryRequestRepository
 
 
-def make_request(callsign="DLH123"):
+def make_request(
+    callsign="DLH123",
+):
     return SilentRequestModel(
         id=callsign,
         request_type="PUSHBACK",
@@ -83,3 +85,38 @@ def test_delete_existing():
 def test_delete_missing():
     repo = MemoryRequestRepository()
     assert repo.delete("missing") is False
+
+
+def test_get_by_callsign_found():
+    repo = MemoryRequestRepository()
+    req = make_request("DLH123")
+    repo.create(req)
+
+    result = repo.get_by_callsign("DLH123")
+
+    assert result is not None
+    assert result.id == "DLH123"
+
+
+def test_get_by_callsign_not_found():
+    repo = MemoryRequestRepository()
+    assert repo.get_by_callsign("UNKNOWN") is None
+
+
+def test_delete_by_callsign_found():
+    repo = MemoryRequestRepository()
+    req = make_request("DLH123")
+    repo.create(req)
+
+    deleted = repo.delete_by_callsign("DLH123")
+
+    assert deleted is True
+    assert repo.get("DLH123") is None
+
+
+def test_delete_by_callsign_not_found():
+    repo = MemoryRequestRepository()
+
+    deleted = repo.delete_by_callsign("UNKNOWN")
+
+    assert deleted is False
