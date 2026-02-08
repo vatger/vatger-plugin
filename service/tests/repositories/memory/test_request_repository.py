@@ -92,7 +92,7 @@ def test_get_by_callsign_found():
     req = make_request("DLH123")
     repo.create(req)
 
-    result = repo.get_by_callsign("DLH123")
+    result = repo.get_request_by_callsign("DLH123")
 
     assert result is not None
     assert result.id == "DLH123"
@@ -100,7 +100,7 @@ def test_get_by_callsign_found():
 
 def test_get_by_callsign_not_found():
     repo = MemoryRequestRepository()
-    assert repo.get_by_callsign("UNKNOWN") is None
+    assert repo.get_request_by_callsign("UNKNOWN") is None
 
 
 def test_delete_by_callsign_found():
@@ -108,7 +108,7 @@ def test_delete_by_callsign_found():
     req = make_request("DLH123")
     repo.create(req)
 
-    deleted = repo.delete_by_callsign("DLH123")
+    deleted = repo.delete_request_by_callsign("DLH123")
 
     assert deleted is True
     assert repo.get("DLH123") is None
@@ -117,6 +117,6 @@ def test_delete_by_callsign_found():
 def test_delete_by_callsign_not_found():
     repo = MemoryRequestRepository()
 
-    deleted = repo.delete_by_callsign("UNKNOWN")
+    deleted = repo.delete_request_by_callsign("UNKNOWN")
 
     assert deleted is False
