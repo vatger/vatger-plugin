@@ -3,12 +3,16 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
+from api.adapters.auth_adapter import AuthAdapter
 from api.models.request import SilentRequest
 from containers.dependencies import DependencyContainer
 from interfaces.services.request_service_interface import RequestServiceInterface
 from models.request import SilentRequestModel
 
 router = APIRouter(prefix="/request")
+
+RequestWrite = AuthAdapter("request:write")
+RequestDelete = AuthAdapter("request:delete")
 
 
 @router.get("/{callsign}")
@@ -23,7 +27,7 @@ def get_request(
     return request_service.get_request_by_callsign(callsign)
 
 
-@router.post("")
+@router.post("", dependencies=[Depends(RequestWrite)])
 @inject
 def post_request(
     request: SilentRequest,
@@ -37,7 +41,7 @@ def post_request(
     request_service.create_request(request)
 
 
-@router.delete("/{callsign}")
+@router.delete("/{callsign}", dependencies=[Depends(RequestDelete)])
 @inject
 def delete_request(
     callsign: str,
