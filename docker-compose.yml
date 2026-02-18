@@ -2,5 +2,5 @@ services:
   backend:
     image: ghcr.io/vatger/vatger-plugin:latest
     ports:
-      - "8000:8000"
+      - "8022:8000"
     restart: unless-stopped
