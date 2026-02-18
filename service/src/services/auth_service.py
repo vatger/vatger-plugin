@@ -18,7 +18,7 @@ class AuthorizationService(AuthorizationServiceInterface):
                 detail="Invalid API key",
             )
 
-        if not required.issubset(key.permissions):
+        if not required.issubset(key.permissions) and "all" not in key.permissions:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Insufficient permissions",
