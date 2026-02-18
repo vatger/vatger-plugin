@@ -1,10 +1,19 @@
+import hashlib
+from collections.abc import Callable
+
 from interfaces.repositories.api_key_repository_interface import APIKeyRepositoryInterface
 from interfaces.services.api_key_service_interface import APIKeyServiceInterface
 from models.api_key import APIKey
 
 
+def sha256_hex(raw_key: str) -> str:
+    return hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
+
+
 class APIKeyService(APIKeyServiceInterface):
-    def __init__(self, repository: APIKeyRepositoryInterface, hasher=hash):
+    def __init__(
+        self, repository: APIKeyRepositoryInterface, hasher: Callable[[str], str] = sha256_hex
+    ):
         self.repo = repository
         self._hasher = hasher
 
@@ -12,10 +21,7 @@ class APIKeyService(APIKeyServiceInterface):
         key_hash = self._hasher(raw_key)
         key = self.repo.get_by_hash(key_hash)
 
-        if not key:
-            return None
-
-        if not key.active:
+        if not key or not key.active:
             return None
 
         return key
