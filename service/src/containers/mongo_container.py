@@ -18,7 +18,12 @@ class MongoContainer(containers.DeclarativeContainer):
         name=config.mongo.database,
     )
 
-    api_key_collection = providers.Singleton(
+    api_keys_collection = providers.Singleton(
         lambda db: db["api-keys"],
+        mongo_database,
+    )
+
+    api_key_repository = providers.Singleton(
         MongoAPIKeyRepository,
+        collection=api_keys_collection,
     )
