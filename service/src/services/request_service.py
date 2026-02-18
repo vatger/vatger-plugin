@@ -7,6 +7,9 @@ class RequestService(RequestServiceInterface):
     def __init__(self, repository: RequestRepositoryInterface):
         self.repo = repository
 
+    def get_all_requests(self):
+        return list(self.repo.get_all())
+
     def get_request_by_callsign(self, callsign: str) -> SilentRequestModel | None:
         return self.repo.get_request_by_callsign(callsign)
 

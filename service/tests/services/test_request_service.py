@@ -70,3 +70,19 @@ def test_delete_request_by_callsign_not_found(service, repo_mock):
 
     repo_mock.delete_request_by_callsign.assert_called_once_with("UNKNOWN")
     assert result is False
+
+
+def test_get_all(service, repo_mock):
+    repo_mock.get_all.return_value = [
+        SilentRequestModel(
+            id="1",
+            request_type="PUSHBACK",
+            callsign="DLH123",
+            airport_icao="EDDF",
+        )
+    ]
+
+    result = service.get_all_requests()
+
+    assert isinstance(result, list)
+    assert len(result) > 0

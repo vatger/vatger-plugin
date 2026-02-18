@@ -15,6 +15,17 @@ RequestWrite = AuthAdapter("request:write")
 RequestDelete = AuthAdapter("request:delete")
 
 
+@router.get("")
+@inject
+def get_all_requests(
+    request_service: Annotated[
+        RequestServiceInterface,
+        Depends(Provide(DependencyContainer.request_container.request_service)),
+    ],
+):
+    return request_service.get_all_requests()
+
+
 @router.get("/{callsign}")
 @inject
 def get_request(

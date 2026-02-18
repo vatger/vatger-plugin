@@ -5,6 +5,9 @@ from models.request import SilentRequestModel
 
 class RequestServiceInterface(ABC):
     @abstractmethod
+    def get_all_requests(self) -> list[SilentRequestModel]: ...
+
+    @abstractmethod
     def get_request_by_callsign(self, callsign: str) -> SilentRequestModel | None: ...
 
     @abstractmethod
