@@ -1,4 +1,7 @@
-from interfaces.repositories.request_repository_interface import RequestRepositoryInterface
+from interfaces.repositories.request_repository_interface import (
+    DuplicateSilentRequestException,
+    RequestRepositoryInterface,
+)
 from interfaces.services.request_service_interface import RequestServiceInterface
 from models.request import SilentRequestModel
 
@@ -14,7 +17,12 @@ class RequestService(RequestServiceInterface):
         return self.repo.get_request_by_callsign(callsign)
 
     def create_request(self, request: SilentRequestModel) -> SilentRequestModel:
-        return self.repo.create(request)
+        existing_request = self.repo.get_request_by_callsign(request.callsign)
+
+        if not existing_request:
+            return self.repo.create(request)
+
+        raise DuplicateSilentRequestException
 
     def delete_request_by_callsign(self, callsign: str) -> bool:
         return self.repo.delete_request_by_callsign(callsign)

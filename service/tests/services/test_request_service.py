@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from interfaces.repositories.request_repository_interface import DuplicateSilentRequestException
 from models.request import SilentRequestModel
 from services.request_service import RequestService
 
@@ -45,13 +46,29 @@ def test_get_request_by_callsign_not_found(service, repo_mock):
 
 
 def test_create_request(service, repo_mock):
+    """test request passes no request with callsign is saved"""
     req = make_request()
     repo_mock.create.return_value = req
+    repo_mock.get_request_by_callsign.return_value = None
 
     result = service.create_request(req)
 
     repo_mock.create.assert_called_once_with(req)
     assert result == req
+
+
+def test_create_request_duplicate(service, repo_mock):
+    """test duplicate request gets declined and returns and error"""
+    req = make_request()
+    repo_mock.create.return_value = req
+    repo_mock.get_request_by_callsign.return_value = req
+
+    with pytest.raises(DuplicateSilentRequestException):
+        result = service.create_request(req)
+
+        assert result is None
+        repo_mock.create.assert_not_called()
+        repo_mock.get_request_by_callsign.assert_not_called()
 
 
 def test_delete_request_by_callsign(service, repo_mock):
