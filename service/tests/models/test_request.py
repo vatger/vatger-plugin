@@ -18,3 +18,4 @@ def test_default():
     assert model.created_at.tzinfo == datetime.UTC
 
     assert before <= model.created_at <= after
+    assert isinstance(model.request_type, str)
