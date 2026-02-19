@@ -1,11 +1,12 @@
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.adapters.auth_adapter import AuthAdapter
 from api.models.request import SilentRequest
 from containers.dependencies import DependencyContainer
+from interfaces.repositories.request_repository_interface import DuplicateSilentRequestException
 from interfaces.services.request_service_interface import RequestServiceInterface
 from models.request import SilentRequestModel
 
@@ -49,7 +50,13 @@ def post_request(
 ):
     request = SilentRequestModel(**request.model_dump())
 
-    request_service.create_request(request)
+    try:
+        request_service.create_request(request)
+    except DuplicateSilentRequestException:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A request for this callsign already exists.",
+        ) from None
 
 
 @router.delete("/{callsign}", dependencies=[Depends(RequestDelete)])
