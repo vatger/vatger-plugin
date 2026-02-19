@@ -16,4 +16,5 @@ runs:
       working-directory: ${{ inputs.directory }}
       run: |
         echo "Running ${{ inputs.test_type }} tests in ${{ inputs.directory }}..."
-        uv run pytest -m "${{ inputs.test_type }}" --maxfail=1 --disable-warnings --cov-append --cov-report=xml:coverage.xml
+        uv run pytest -m "${{ inputs.test_type }}" --maxfail=1 --disable-warnings --cov-append --cov-report=xml:coverage.xml || \
+        (e=$?; [ $e -eq 5 ] && echo "No tests collected, skipping" || exit $e)
