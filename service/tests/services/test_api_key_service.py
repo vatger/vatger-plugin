@@ -4,6 +4,8 @@ from models.api_key import APIKey
 from services.api_key_service import APIKeyService
 from tests.mocks.repositories.api_key_repository_mock import APIKeyRepositoryMock
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.fixture
 def repository():
