@@ -1,6 +1,10 @@
 services:
   backend:
     image: ghcr.io/vatger/vatger-plugin:latest
+    container_name: service
     ports:
       - "8022:8000"
     restart: unless-stopped
+    environment:
+      - MONGO_URI
+      - MONGO_DATABASE
