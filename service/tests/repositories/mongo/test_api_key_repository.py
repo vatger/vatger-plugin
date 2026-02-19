@@ -4,6 +4,8 @@ import pytest
 from models.api_key import APIKey
 from repositories.mongo.api_key_repository import MongoAPIKeyRepository
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.fixture
 def collection():

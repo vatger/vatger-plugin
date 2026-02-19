@@ -1,6 +1,10 @@
 import datetime
 
+import pytest
+
 from models.request import SilentRequestModel
+
+pytestmark = pytest.mark.unit
 
 
 def test_default():

@@ -6,6 +6,8 @@ from interfaces.repositories.request_repository_interface import DuplicateSilent
 from models.request import SilentRequestModel
 from services.request_service import RequestService
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.fixture
 def repo_mock():

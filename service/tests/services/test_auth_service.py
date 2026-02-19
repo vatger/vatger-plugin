@@ -5,6 +5,8 @@ from models.api_key import APIKey
 from services.auth_service import AuthorizationService
 from tests.mocks.services.api_key_service_mock import APIKeyServiceMock
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.fixture
 def api_key():
