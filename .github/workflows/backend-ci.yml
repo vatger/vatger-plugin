@@ -11,6 +11,9 @@ on:
       - 'service/**'
       - '.github/**'
 
+permissions:
+  pull-requests: write
+
 env:
   DIRECTORY: service
 
