@@ -4,7 +4,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.adapters.auth_adapter import AuthAdapter
-from api.models.request import SilentRequest
+from api.models.request import SilentRequestDto
 from containers.dependencies import DependencyContainer
 from interfaces.repositories.request_repository_interface import DuplicateSilentRequestException
 from interfaces.services.request_service_interface import RequestServiceInterface
@@ -16,7 +16,7 @@ RequestWrite = AuthAdapter("request:write")
 RequestDelete = AuthAdapter("request:delete")
 
 
-@router.get("")
+@router.get("", response_model=list[SilentRequestDto])
 @inject
 def get_all_requests(
     request_service: Annotated[
@@ -27,7 +27,10 @@ def get_all_requests(
     return request_service.get_all_requests()
 
 
-@router.get("/{callsign}")
+@router.get(
+    "/{callsign}",
+    response_model=SilentRequestDto,
+)
 @inject
 def get_request(
     callsign: str,
@@ -39,10 +42,14 @@ def get_request(
     return request_service.get_request_by_callsign(callsign)
 
 
-@router.post("", dependencies=[Depends(RequestWrite)])
+@router.post(
+    "",
+    dependencies=[Depends(RequestWrite)],
+    response_model=SilentRequestDto,
+)
 @inject
 def post_request(
-    request: SilentRequest,
+    request: SilentRequestDto,
     request_service: Annotated[
         RequestServiceInterface,
         Depends(Provide(DependencyContainer.request_container.request_service)),
@@ -51,7 +58,8 @@ def post_request(
     request = SilentRequestModel(**request.model_dump())
 
     try:
-        request_service.create_request(request)
+        response = request_service.create_request(request)
+        return SilentRequestDto(**response)
     except DuplicateSilentRequestException:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
