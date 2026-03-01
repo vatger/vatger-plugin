@@ -4,6 +4,7 @@ IF(BUILD_TESTING)
     # Unit tests
     ADD_EXECUTABLE(unit_tests
         api/test_CurlRestClient.cpp
+        core/test_BackGroundExecuter.cpp
         test_main.cpp
     )
     TARGET_LINK_LIBRARIES(unit_tests PRIVATE
