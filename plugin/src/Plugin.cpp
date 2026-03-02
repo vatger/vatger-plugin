@@ -1,6 +1,7 @@
 #include "plugin.h"
 
 #include "Version.h"
+#include "core/BackGroundExecuter.h"
 #include "log/ConsoleLogger.h"
 #include "log/SqlLiteLogger.h"
 #include "utils/File.h"
@@ -9,6 +10,7 @@ namespace vatger {
 VatgerPlugin::VatgerPlugin()
     : CPlugIn(EuroScopePlugIn::COMPATIBILITY_CODE, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_LICENSE) {
     m_logger = std::make_shared<logging::ConsoleLogger>();
+    m_executer = std::make_shared<BackgroundExecutor>(m_logger);
 
     DisplayMessage("Version " + std::string(PLUGIN_VERSION) + " loaded", "Initialisation");
     m_logger->info("Version " + std::string(PLUGIN_VERSION) + " loaded");
