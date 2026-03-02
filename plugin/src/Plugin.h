@@ -7,12 +7,14 @@
 #include <memory>
 #include <string>
 
+#include "interfaces/core/IBackGroundExecuter.h"
 #include "log/ILogger.h"
 
 namespace vatger {
 class VatgerPlugin : public EuroScopePlugIn::CPlugIn {
    private:
     std::shared_ptr<logging::ILogger> m_logger;
+    std::shared_ptr<IBackgroundExecutor> m_executer;
 
    public:
     VatgerPlugin();
