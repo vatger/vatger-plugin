@@ -8,8 +8,10 @@
 #include "api/CurlRestClient.h"
 #include "api/IRestclient.h"
 #include "interfaces/services/ISilentRequestService.h"
+#include "log/ConsoleLogger.h"
 #include "log/ILogger.h"
 #include "types/SilentRequest.h"
+
 
 class SilentRequestService : public ISilentRequestService {
    private:
