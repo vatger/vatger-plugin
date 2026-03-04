@@ -57,6 +57,7 @@ SET(SOURCE_FILES
     src/api/CurlRestClient.cpp
     src/log/ConsoleLogger.cpp
     src/log/SqlLiteLogger.cpp
+    src/modules/silentPushback/SilentPushbackModule.cpp
     src/Plugin.cpp
     src/main.cpp
 )
