@@ -1,6 +1,8 @@
 services:
   backend:
-    image: ghcr.io/vatger/vatger-plugin:latest
+    build:
+      context: service
+      dockerfile: Dockerfile
     container_name: service
     ports:
       - "8022:8000"
@@ -8,32 +10,41 @@ services:
     environment:
       - MONGO_URI
       - MONGO_DATABASE
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL
     depends_on:
       redis:
         condition: service_healthy
+
 
   worker:
-    image: ghcr.io/vatger/vatger-plugin:latest
+    build:
+      context: service
+      dockerfile: Dockerfile
     container_name: service-worker
     restart: unless-stopped
-    command: taskiq worker app.taskiq_app:broker app.tasks
+    command: taskiq worker app.tkq:broker
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - PYTHONPATH=/app/src
     depends_on:
       redis:
         condition: service_healthy
 
+
   scheduler:
-    image: ghcr.io/vatger/vatger-plugin:latest
+    build:
+      context: service
+      dockerfile: Dockerfile
     container_name: service-scheduler
     restart: unless-stopped
     command: taskiq scheduler app.broker:scheduler
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - PYTHONPATH=/app/src
     depends_on:
       redis:
         condition: service_healthy
+
 
   redis:
     container_name: redis
