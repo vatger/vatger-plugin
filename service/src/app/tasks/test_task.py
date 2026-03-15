@@ -1,7 +1,7 @@
 import logging
+from datetime import datetime
 
 from app.broker import broker
-from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -9,5 +9,4 @@ logger = logging.getLogger(__name__)
 
 @broker.task
 async def test_task():
-
-    print(f"RUNNING at {datetime.now().isoformat()}")
+    logger.info(f"RUNNING at {datetime.now().isoformat()}")
