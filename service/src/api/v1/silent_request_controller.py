@@ -29,7 +29,7 @@ def get_all_requests(
 
 @router.get(
     "/{callsign}",
-    response_model=SilentRequestDto,
+    response_model=SilentRequestDto | None,
 )
 @inject
 def get_request(
@@ -39,7 +39,12 @@ def get_request(
         Depends(Provide(DependencyContainer.request_container.request_service)),
     ],
 ):
-    return request_service.get_request_by_callsign(callsign)
+    response = request_service.get_request_by_callsign(callsign)
+
+    if response:
+        return SilentRequestDto(**response.model_dump())
+    else:
+        return None
 
 
 @router.post(
@@ -59,7 +64,7 @@ def post_request(
 
     try:
         response = request_service.create_request(request)
-        return SilentRequestDto(**response)
+        return SilentRequestDto(**response.model_dump())
     except DuplicateSilentRequestException:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
