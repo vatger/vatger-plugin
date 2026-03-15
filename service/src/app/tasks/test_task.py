@@ -8,5 +8,5 @@ logger = logging.getLogger(__name__)
 
 
 @broker.task
-async def test_task():
-    logger.info(f"RUNNING at {datetime.now().isoformat()}")
+async def test_task():  # noqa: RUF029
+    logger.info(f"RUNNING at {datetime.now().isoformat()}")  # noqa: DTZ005
