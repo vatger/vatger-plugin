@@ -3,7 +3,7 @@ services:
     build:
       context: service
       dockerfile: Dockerfile
-    container_name: service
+    container_name: vatger-plugin-api
     ports:
       - "8022:8000"
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
     build:
       context: service
       dockerfile: Dockerfile
-    container_name: service-worker
+    container_name: vatger-plugin-worker
     restart: unless-stopped
     command: taskiq worker app.tkq:broker
     environment:
@@ -35,7 +35,7 @@ services:
     build:
       context: service
       dockerfile: Dockerfile
-    container_name: service-scheduler
+    container_name: vatger-plugin-scheduler
     restart: unless-stopped
     command: taskiq scheduler app.broker:scheduler
     environment:
@@ -47,7 +47,7 @@ services:
 
 
   redis:
-    container_name: redis
+    container_name: vatger-plugin-redis
     image: redis:7-alpine
     restart: unless-stopped
     healthcheck:
