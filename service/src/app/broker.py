@@ -1,3 +1,12 @@
-from taskiq_redis import RedisStreamBroker
+from taskiq import TaskiqScheduler
+from taskiq_redis import RedisScheduleSource, RedisStreamBroker
 
-broker = RedisStreamBroker("redis://localhost:6379/0")
+from settings import Settings
+
+settings = Settings()
+
+broker = RedisStreamBroker(settings.redis_url)
+schedule_source = RedisScheduleSource(settings.redis_url)
+scheduler = TaskiqScheduler(broker=broker, sources=[schedule_source])
+
+import app.tasks  # noqa: E402, F401
