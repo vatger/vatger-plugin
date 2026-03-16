@@ -1,5 +1,5 @@
+from domain.api_key import APIKey
 from interfaces.repositories.api_key_repository_interface import APIKeyRepositoryInterface
-from models.api_key import APIKey
 
 
 class APIKeyRepositoryMock(APIKeyRepositoryInterface):

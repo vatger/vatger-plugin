@@ -1,6 +1,6 @@
 import pytest
 
-from models.request import SilentRequestModel
+from domain.request import SilentRequestModel
 from repositories.memory.request_repository import MemoryRequestRepository
 
 pytestmark = pytest.mark.unit

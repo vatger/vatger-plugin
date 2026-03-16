@@ -1,9 +1,9 @@
 import hashlib
 from collections.abc import Callable
 
+from domain.api_key import APIKey
 from interfaces.repositories.api_key_repository_interface import APIKeyRepositoryInterface
 from interfaces.services.api_key_service_interface import APIKeyServiceInterface
-from models.api_key import APIKey
 
 
 def sha256_hex(raw_key: str) -> str:

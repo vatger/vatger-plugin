@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
+from domain.request import SilentRequestModel
 from interfaces.repositories.base_repository import BaseRepository
-from models.request import SilentRequestModel
 
 
 class DuplicateSilentRequestException(Exception): ...

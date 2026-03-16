@@ -1,9 +1,9 @@
+from domain.request import SilentRequestModel
 from interfaces.repositories.request_repository_interface import (
     DuplicateSilentRequestException,
     RequestRepositoryInterface,
 )
 from interfaces.services.request_service_interface import RequestServiceInterface
-from models.request import SilentRequestModel
 
 
 class RequestService(RequestServiceInterface):

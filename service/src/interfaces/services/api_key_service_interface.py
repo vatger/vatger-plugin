@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models.api_key import APIKey
+from domain.api_key import APIKey
 
 
 class APIKeyServiceInterface(ABC):

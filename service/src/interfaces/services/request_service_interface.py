@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models.request import SilentRequestModel
+from domain.request import SilentRequestModel
 
 
 class RequestServiceInterface(ABC):

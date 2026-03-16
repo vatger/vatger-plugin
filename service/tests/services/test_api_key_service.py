@@ -1,6 +1,6 @@
 import pytest
 
-from models.api_key import APIKey
+from domain.api_key import APIKey
 from services.api_key_service import APIKeyService
 from tests.mocks.repositories.api_key_repository_mock import APIKeyRepositoryMock
 

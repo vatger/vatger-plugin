@@ -1,5 +1,5 @@
+from domain.api_key import APIKey
 from interfaces.services.api_key_service_interface import APIKeyServiceInterface
-from models.api_key import APIKey
 
 
 class APIKeyServiceMock(APIKeyServiceInterface):

@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from models.request import SilentRequestModel
+from domain.request import SilentRequestModel
 
 pytestmark = pytest.mark.unit
 

@@ -1,7 +1,7 @@
 import mongomock
 import pytest
 
-from models.api_key import APIKey
+from domain.api_key import APIKey
 from repositories.mongo.api_key_repository import MongoAPIKeyRepository
 
 pytestmark = pytest.mark.unit

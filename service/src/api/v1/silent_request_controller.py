@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from api.adapters.auth_adapter import AuthAdapter
 from api.models.request import SilentRequestDto
 from containers.dependencies import DependencyContainer
+from domain.request import SilentRequestModel
 from interfaces.repositories.request_repository_interface import DuplicateSilentRequestException
 from interfaces.services.request_service_interface import RequestServiceInterface
-from models.request import SilentRequestModel
 
 router = APIRouter(prefix="/request")
 

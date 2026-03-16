@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
 
+from domain.api_key import APIKey
 from interfaces.services.api_key_service_interface import APIKeyServiceInterface
 from interfaces.services.auth_service_interface import AuthorizationServiceInterface
-from models.api_key import APIKey
 
 
 class AuthorizationService(AuthorizationServiceInterface):

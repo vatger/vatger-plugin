@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
+from domain.request import SilentRequestModel
 from interfaces.repositories.request_repository_interface import DuplicateSilentRequestException
-from models.request import SilentRequestModel
 from services.request_service import RequestService
 
 pytestmark = pytest.mark.unit

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
+from domain.request import SilentRequestModel
 from interfaces.repositories.request_repository_interface import RequestRepositoryInterface
-from models.request import SilentRequestModel
 
 
 class MemoryRequestRepository(RequestRepositoryInterface):

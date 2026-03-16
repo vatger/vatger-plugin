@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException, status
 
-from models.api_key import APIKey
+from domain.api_key import APIKey
 from services.auth_service import AuthorizationService
 from tests.mocks.services.api_key_service_mock import APIKeyServiceMock
 
