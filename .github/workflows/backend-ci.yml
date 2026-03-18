@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'service/**'
-      - '.github/**'
+      - '.github/workflows/backend-ci.yml'
+      - '.github/actions/service/**'
   pull_request:
     paths:
       - 'service/**'
-      - '.github/**'
+      - '.github/workflows/backend-ci.yml'
+      - '.github/actions/service/**'
 
 permissions:
   pull-requests: write
