@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'service/**'
-      - '.github/**'
+      - '.github/workflows/backend-ci.yml'
+      - '.github/actions/service/**'
   pull_request:
     paths:
       - 'service/**'
-      - '.github/**'
+      - '.github/workflows/backend-ci.yml'
+      - '.github/actions/service/**'
 
 permissions:
   pull-requests: write
@@ -18,7 +20,40 @@ env:
   DIRECTORY: service
 
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup backend
+        uses: ./.github/actions/service/setup
+        with:
+          directory: ${{ env.DIRECTORY }}
+
+      - name: Run ruff format
+        run: cd ${{ env.DIRECTORY }} && uv run ruff format --diff
+
+  check:
+    needs: format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        
+      - name: Setup backend
+        uses: ./.github/actions/service/setup
+        with:
+          directory: ${{ env.DIRECTORY }}
+
+      - name: Run ruff check
+        run: cd ${{ env.DIRECTORY }} && uv run ruff check --output-format github
+      # - name: Run pyright
+      #   run: uv run pyright
+
+
   tests:
+    needs: check
     runs-on: ubuntu-latest
 
     steps:
@@ -26,18 +61,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup service
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/service/setup
         with:
           directory: ${{ env.DIRECTORY }}
 
       - name: Run unit tests
-        uses: ./.github/actions/pytest
+        uses: ./.github/actions/service/pytest
         with:
           directory: ${{ env.DIRECTORY }}
           test_type: unit
 
       - name: Run integration tests
-        uses: ./.github/actions/pytest
+        uses: ./.github/actions/service/pytest
         with:
           directory: ${{ env.DIRECTORY }}
           test_type: integration
@@ -47,33 +82,4 @@ jobs:
         with:
           work-dir: ${{ env.DIRECTORY }}
         continue-on-error: true
-
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        
-      - name: Setup backend
-        uses: ./.github/actions/setup
-        with:
-          directory: ${{ env.DIRECTORY }}
-
-      - name: Run ruff check
-        run: cd ${{ env.DIRECTORY }} && uv run ruff check --output-format github
-      # - name: Run pyright
-      #   run: uv run pyright
-
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Setup backend
-        uses: ./.github/actions/setup
-        with:
-          directory: ${{ env.DIRECTORY }}
-
-      - name: Run ruff format
-        run: cd ${{ env.DIRECTORY }} && uv run ruff format --diff
+  

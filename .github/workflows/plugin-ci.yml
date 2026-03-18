@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'plugin/**'
-      - '.github/**'
+      - '.github/workflows/plugin-ci.yml'
+      - '.github/actions/plugin/**.yml'
   pull_request:
     paths:
       - 'plugin/**'
-      - '.github/**'
+      - '.github/workflows/plugin-ci.yml'
+      - '.github/actions/plugin/**.yml'
 
 jobs:
   lint:
