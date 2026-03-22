@@ -3,10 +3,8 @@ from datetime import timedelta
 from taskiq import ScheduledTask, TaskiqEvents, TaskiqState
 
 from app.broker import broker, schedule_source
-from app.tasks.poll_datafeed import poll_datafeed
-from containers.dependencies import DependencyContainer
-
 from app.tasks import poll_datafeed
+from containers.dependencies import DependencyContainer
 
 POLL_DATAFEED = "POLL_DATAFEED"
 
