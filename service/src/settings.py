@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     mongo: MongoSettings = MongoSettings()
     redis_url: str = "redis://localhost:6379/0"
 
+    datafeed_url: str = "http://df.vatsim-germany.org/datafeed"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

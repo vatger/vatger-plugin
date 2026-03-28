@@ -15,6 +15,7 @@ class DatafeedContainer(containers.DeclarativeContainer):
 
     datafeed_gateway = providers.Singleton(
         VatsimDatafeedGateway,
+        config.datafeed_url,
     )
 
     datafeed_repository = providers.Singleton(
