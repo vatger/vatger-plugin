@@ -20,6 +20,7 @@ services:
     command: taskiq worker app.tkq:broker app.tasks
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - DATAFEED_URL=${DATAFEED_URL}
     depends_on:
       redis:
         condition: service_healthy
