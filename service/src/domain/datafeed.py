@@ -27,7 +27,7 @@ class PilotModel(BaseModel):
     heading: int
     qnh_i_hg: float
     qnh_mb: int
-    flight_plan: FlightPlanModel | None
+    flight_plan: FlightPlanModel | None = None
     logon_time: datetime
     last_updated: datetime
 
