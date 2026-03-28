@@ -25,7 +25,6 @@ services:
     command: taskiq worker app.tkq:broker
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - PYTHONPATH=/app/src
     depends_on:
       redis:
         condition: service_healthy
@@ -40,7 +39,6 @@ services:
     command: taskiq scheduler app.broker:scheduler
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - PYTHONPATH=/app/src
     depends_on:
       redis:
         condition: service_healthy
@@ -48,6 +46,8 @@ services:
 
   redis:
     container_name: vatger-plugin-redis
+    ports:
+      - "6379:6379"
     image: redis:7-alpine
     restart: unless-stopped
     healthcheck:
