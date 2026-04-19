@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     VATSIM_AUTH_SCOPES: str = "full_name email vatsim_details country"
     VATSIM_AUTH_USERINFO_PATH: str = "api/user"
 
-    COOKIE_NAME_ACCESS: str = "vtfdps_access"
-    COOKIE_NAME_REFRESH: str = "vtfdps_refresh"
+    COOKIE_NAME_ACCESS: str = "vatger_plugin_access"
+    COOKIE_NAME_REFRESH: str = "vatger_plugin_refresh"
 
     model_config = SettingsConfigDict(
         env_file=".env",
