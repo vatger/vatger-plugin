@@ -5,6 +5,8 @@ from containers.mongo_container import MongoContainer
 from containers.request import RequestContainer
 from services.api_key_auth_service import ApiKeyAuthService
 from services.api_key_service import APIKeyService
+from services.auth_service import AuthService
+from services.vatsim_service import VatsimService
 from settings import Settings
 
 
@@ -17,11 +19,17 @@ class DependencyContainer(containers.DeclarativeContainer):
     mongo_container = providers.Container(MongoContainer, config=config)
     datafeed_container = providers.Container(DatafeedContainer, config=config)
 
-    # Auth
+    # API Key Auth
     api_key_service = providers.Singleton(
         APIKeyService, repository=mongo_container.api_key_repository
     )
-    auth_service = providers.Factory(
+    api_key_auth_service = providers.Factory(
         ApiKeyAuthService,
         service=api_key_service,
+    )
+
+    # OAuth
+    vatsim_service = providers.Singleton(VatsimService)
+    auth_service = providers.Singleton(
+        AuthService, vatsim_service=vatsim_service, user_repo=mongo_container.user_repository
     )

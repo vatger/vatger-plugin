@@ -26,7 +26,7 @@ class AuthAdapter:
         api_key: str | None = Security(api_key_header),
         auth_service: Annotated[
             ApiKeyAuthServiceInterface,
-            Depends(Provide(DependencyContainer.auth_service)),
+            Depends(Provide(DependencyContainer.api_key_auth_service)),
         ] = None,
     ):
         if not api_key:

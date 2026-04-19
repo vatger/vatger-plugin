@@ -9,6 +9,8 @@ class Settings(BaseSettings):
 
     datafeed_url: str = "http://df.vatsim-germany.org/datafeed"
 
+    SECRET_KEY: str = "supersecret"
+
     VATSIM_AUTH_URL: str = "https://auth-dev.vatsim.net"
     VATSIM_CLIENT_ID: str = "1363"
     VATSIM_CLIENT_SECRET: str = "NFCGxEDK9MobuqHmxJWyTpRWsVGacCH0xPptLU4o"
