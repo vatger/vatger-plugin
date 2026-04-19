@@ -2,7 +2,7 @@ import pytest
 from fastapi import HTTPException, status
 
 from domain.api_key import APIKey
-from services.auth_service import AuthorizationService
+from services.api_key_auth_service import ApiKeyAuthService
 from tests.mocks.services.api_key_service_mock import APIKeyServiceMock
 
 pytestmark = pytest.mark.unit
@@ -27,7 +27,7 @@ def key_service(api_key):
 
 @pytest.fixture
 def auth_service(key_service):
-    return AuthorizationService(key_service)
+    return ApiKeyAuthService(key_service)
 
 
 def test_authorize_returns_key_when_valid_and_has_permissions(auth_service, key_service, api_key):

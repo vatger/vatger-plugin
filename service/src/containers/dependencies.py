@@ -3,8 +3,8 @@ from dependency_injector import containers, providers
 from containers.datafeed import DatafeedContainer
 from containers.mongo_container import MongoContainer
 from containers.request import RequestContainer
+from services.api_key_auth_service import ApiKeyAuthService
 from services.api_key_service import APIKeyService
-from services.auth_service import AuthorizationService
 from settings import Settings
 
 
@@ -22,6 +22,6 @@ class DependencyContainer(containers.DeclarativeContainer):
         APIKeyService, repository=mongo_container.api_key_repository
     )
     auth_service = providers.Factory(
-        AuthorizationService,
+        ApiKeyAuthService,
         service=api_key_service,
     )

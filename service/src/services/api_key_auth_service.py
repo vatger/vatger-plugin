@@ -2,10 +2,10 @@ from fastapi import HTTPException, status
 
 from domain.api_key import APIKey
 from interfaces.services.api_key_service_interface import APIKeyServiceInterface
-from interfaces.services.auth_service_interface import AuthorizationServiceInterface
+from interfaces.services.auth_service_interface import ApiKeyAuthServiceInterface
 
 
-class AuthorizationService(AuthorizationServiceInterface):
+class ApiKeyAuthService(ApiKeyAuthServiceInterface):
     def __init__(self, service: APIKeyServiceInterface):
         self.service = service
 

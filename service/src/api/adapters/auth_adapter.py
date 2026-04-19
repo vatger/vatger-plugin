@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, Security
 from fastapi.security import APIKeyHeader
 
 from containers.dependencies import DependencyContainer
-from interfaces.services.auth_service_interface import AuthorizationServiceInterface
+from interfaces.services.auth_service_interface import ApiKeyAuthServiceInterface
 
 API_KEY_NAME = "X-API-Key"
 
@@ -25,7 +25,7 @@ class AuthAdapter:
         self,
         api_key: str | None = Security(api_key_header),
         auth_service: Annotated[
-            AuthorizationServiceInterface,
+            ApiKeyAuthServiceInterface,
             Depends(Provide(DependencyContainer.auth_service)),
         ] = None,
     ):
