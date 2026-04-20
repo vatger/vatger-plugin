@@ -6,6 +6,7 @@ from containers.request import RequestContainer
 from services.api_key_auth_service import ApiKeyAuthService
 from services.api_key_service import APIKeyService
 from services.auth_service import AuthService
+from services.plugin_token_service import PluginTokenService
 from services.vatsim_service import VatsimService
 from settings import Settings
 
@@ -32,4 +33,9 @@ class DependencyContainer(containers.DeclarativeContainer):
     vatsim_service = providers.Singleton(VatsimService)
     auth_service = providers.Singleton(
         AuthService, vatsim_service=vatsim_service, user_repo=mongo_container.user_repository
+    )
+
+    # Plugin Token
+    plugin_token_service = providers.Singleton(
+        PluginTokenService, repository=mongo_container.plugin_token_repository
     )

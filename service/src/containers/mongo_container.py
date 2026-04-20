@@ -2,6 +2,7 @@ from dependency_injector import containers, providers
 from pymongo import MongoClient
 
 from repositories.mongo.api_key_repository import MongoAPIKeyRepository
+from repositories.mongo.plugin_token_repository import MongoPluginTokenRepository
 from repositories.mongo.user_repository import MongoUserRepository
 
 
@@ -35,3 +36,14 @@ class MongoContainer(containers.DeclarativeContainer):
     )
 
     user_repository = providers.Singleton(MongoUserRepository, collection=user_collection)
+
+    # Plugin Token
+
+    plugin_token_collection = providers.Singleton(
+        lambda db: db["plugin-token"],
+        mongo_database,
+    )
+
+    plugin_token_repository = providers.Singleton(
+        MongoPluginTokenRepository, collection=plugin_token_collection
+    )
