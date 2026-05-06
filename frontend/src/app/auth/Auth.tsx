@@ -5,7 +5,6 @@ import {
   AuthError,
   type AuthErrorCode,
   authorizeToken,
-  exchangeCode,
   fetchCurrentUser,
 } from "./api"
 import { useAppDispatch } from "./hooks"
@@ -32,43 +31,40 @@ export const Auth = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const code = params.get("code")
     const errorParam = params.get("error") as AuthErrorCode | null
 
-    window.history.replaceState({}, "", "/auth")
-
     if (errorParam) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(errorParam)
       return
     }
 
-    if (!code) return
-
-    setLoading(true)
-
-    const handleCallback = async () => {
+    const resolveSession = async () => {
       try {
-        await exchangeCode(code)
         const user = await fetchCurrentUser()
         dispatch(setUser(user))
         navigate("/")
-      } catch (e) {
-        setError(e instanceof AuthError ? e.code : "auth_failed")
-        setLoading(false)
+      } catch {
+        // not logged in, stay on login page
       }
     }
 
-    handleCallback()
+    resolveSession()
   }, [dispatch, navigate])
 
-  const startLogin = async () => {
+  const startLogin = () => {
     setLoading(true)
     setError(null)
 
+    const params = new URLSearchParams(window.location.search)
+    const next = params.get("next")
+
+    const authUrl = next
+      ? `/api/v1/auth?state=${encodeURIComponent(next)}`
+      : "/api/v1/auth"
+
     try {
       window.location.replace(
-        `${window.location.protocol}//${window.location.host}/api/v1/auth`
+        `${window.location.protocol}//${window.location.host}${authUrl}`
       )
     } catch (e) {
       setError(e instanceof AuthError ? e.code : "network_error")
@@ -109,7 +105,14 @@ export const AuthorizePluginToken = () => {
   return (
     <div className="flex size-full min-h-screen items-center justify-center text-center">
       <Card>
-        <img className="p-12 pb-4" src={useTheme().theme === "dark" ? "/vatger_logo_light.svg" : "/vatger_logo_dark.svg"} />
+        <img
+          className="p-12 pb-4"
+          src={
+            useTheme().theme === "dark"
+              ? "/vatger_logo_light.svg"
+              : "/vatger_logo_dark.svg"
+          }
+        />
         <p className="text-center">
           A EuroScope vatger-plugin requested access in your name.
         </p>
@@ -117,7 +120,7 @@ export const AuthorizePluginToken = () => {
           <p>The access was approved. This tab can be closed.</p>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-center gap-3 mx-12">
+            <div className="mx-12 flex flex-col items-center gap-3">
               <div className="flex w-full flex-col gap-2">
                 <Label htmlFor="inputLabel">Label</Label>
                 <Input
@@ -138,7 +141,11 @@ export const AuthorizePluginToken = () => {
                 Token: {tokenId}
               </p>
 
-              <Button className="px-8" disabled={state === "load"} type="submit">
+              <Button
+                className="px-8"
+                disabled={state === "load"}
+                type="submit"
+              >
                 Approve
               </Button>
             </div>
