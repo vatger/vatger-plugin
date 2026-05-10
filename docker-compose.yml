@@ -2,8 +2,6 @@ services:
   backend:
     image: ghcr.io/vatger/vatger-plugin-backend:latest
     container_name: vatger-plugin-api
-    ports:
-      - "8022:8000"
     restart: unless-stopped
     environment:
       MONGO_URI: ${MONGO_URI}
@@ -50,6 +48,6 @@ services:
     image: ghcr.io/vatger/vatger-plugin-frontend:latest
     container_name: vatger-plugin-frontend
     ports:
-      - "5173:80"
+      - "8022:80"
     depends_on:
       - backend
