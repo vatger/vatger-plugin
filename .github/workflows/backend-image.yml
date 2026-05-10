@@ -1,4 +1,4 @@
-name: Publish Docker image to GHCR
+name: Backend Docker Image Build
 
 on:
   workflow_run:
@@ -45,7 +45,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
             type=sha
