@@ -6,6 +6,11 @@ services:
     environment:
       MONGO_URI: ${MONGO_URI}
       MONGO_DATABASE: ${MONGO_DATABASE}
+      SECRET_KEY: ${SECRET_KEY}
+      PUBLIC_URL: ${PUBLIC_URL}
+      VATSIM_CLIENT_ID: ${VATSIM_CLIENT_ID}
+      VATSIM_CLIENT_SECRET: ${VATSIM_CLIENT_SECRET}
+      VATSIM_REDIRECT_URL: ${VATSIM_REDIRECT_URL}
       REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
