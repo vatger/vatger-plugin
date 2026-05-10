@@ -6,9 +6,9 @@ services:
       - "8022:8000"
     restart: unless-stopped
     environment:
-      - MONGO_URI
-      - MONGO_DATABASE
-      - REDIS_URL=redis://redis:6379/0
+      MONGO_URI: ${MONGO_URI}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
         condition: service_healthy
@@ -19,8 +19,8 @@ services:
     restart: unless-stopped
     command: taskiq worker app.tkq:broker app.tasks
     environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATAFEED_URL=${DATAFEED_URL}
+      REDIS_URL: redis://redis:6379/0
+      DATAFEED_URL: ${DATAFEED_URL}
     depends_on:
       redis:
         condition: service_healthy
@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
     command: taskiq scheduler app.broker:scheduler
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
         condition: service_healthy
@@ -45,3 +45,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  frontend:
+    image: ghcr.io/vatger/vatger-frontend:latest
+    container_name: vatger-plugin-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend

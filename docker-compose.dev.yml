@@ -8,9 +8,9 @@ services:
       - "8022:8000"
     restart: unless-stopped
     environment:
-      - MONGO_URI
-      - MONGO_DATABASE
-      - REDIS_URL
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DATABASE: vtfdps-dev
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
         condition: service_healthy
@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     command: taskiq worker app.tkq:broker
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
         condition: service_healthy
@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
     command: taskiq scheduler app.broker:scheduler
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
         condition: service_healthy
@@ -55,3 +55,22 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  frontend:
+    container_name: vatger-plugin-frontend
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
