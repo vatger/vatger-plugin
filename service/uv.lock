@@ -316,7 +316,7 @@ wheels = [
 
 [[package]]
 name = "fakeredis"
-version = "2.34.1"
+version = "2.35.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "redis" },
@@ -1043,7 +1043,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "dependency-injector", specifier = ">=4.48.3" },
-    { name = "fakeredis", specifier = ">=2.34.1" },
+    { name = "fakeredis", specifier = ">=2.35.1" },
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "mongomock", specifier = ">=4.3.0" },
@@ -1052,7 +1052,7 @@ requires-dist = [
     { name = "python-jose", specifier = ">=3.5.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "taskiq", specifier = ">=0.12.1" },
-    { name = "taskiq-fastapi", specifier = ">=0.4.0" },
+{ name = "taskiq-fastapi", specifier = ">=0.4.0" },
     { name = "taskiq-redis", specifier = ">=1.2.2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.40.0" },
 ]
