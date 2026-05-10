@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/vatger/vatger-plugin:latest
+    image: ghcr.io/vatger/vatger-plugin-backend:latest
     container_name: vatger-plugin-api
     ports:
       - "8022:8000"
@@ -14,7 +14,7 @@ services:
         condition: service_healthy
 
   worker:
-    image: ghcr.io/vatger/vatger-plugin:latest
+    image: ghcr.io/vatger/vatger-plugin-backend:latest
     container_name: vatger-plugin-worker
     restart: unless-stopped
     command: taskiq worker app.tkq:broker app.tasks
@@ -26,7 +26,7 @@ services:
         condition: service_healthy
 
   scheduler:
-    image: ghcr.io/vatger/vatger-plugin:latest
+    image: ghcr.io/vatger/vatger-plugin-backend:latest
     container_name: vatger-plugin-scheduler
     restart: unless-stopped
     command: taskiq scheduler app.broker:scheduler
@@ -47,7 +47,7 @@ services:
       retries: 5
 
   frontend:
-    image: ghcr.io/vatger/vatger-frontend:latest
+    image: ghcr.io/vatger/vatger-frontend-backend:latest
     container_name: vatger-plugin-frontend
     ports:
       - "5173:80"
