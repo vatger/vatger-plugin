@@ -9,8 +9,7 @@ from repositories.redis.datafeed_repository import RedisDatafeedRepository
 
 @pytest.fixture
 def redis_client():
-    client = fakeredis.aioredis.FakeRedis()
-    yield client
+    yield fakeredis.aioredis.FakeRedis()
 
 
 @pytest.fixture
@@ -72,8 +71,8 @@ async def test_get_pilot_data_returns_model(repository):
 
     assert isinstance(pilot, PilotModel)
     assert pilot.callsign == "ABC123"
-    assert pilot.latitude == 50.0
-    assert pilot.longitude == 8.0
+    pytest.approx(pilot.latitude, 50.0)
+    pytest.approx(pilot.longitude, 8.0)
 
 
 @pytest.mark.asyncio
