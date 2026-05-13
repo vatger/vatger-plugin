@@ -7,8 +7,8 @@ import {
   authorizeToken,
   fetchCurrentUser,
 } from "./api"
-import { useAppDispatch } from "./hooks"
-import { setUser } from "./slice"
+import { useAppDispatch, useAppSelector } from "./hooks"
+import { selectUser, setUser } from "./slice"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -27,6 +27,7 @@ export const Auth = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<AuthErrorCode | null>(null)
   const dispatch = useAppDispatch()
+  const user = useAppSelector(selectUser)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -42,14 +43,15 @@ export const Auth = () => {
       try {
         const user = await fetchCurrentUser()
         dispatch(setUser(user))
-        navigate("/")
       } catch {
-        // not logged in, stay on login page
+        // not logged in
       }
     }
 
+    if (user) return
+
     resolveSession()
-  }, [dispatch, navigate])
+  }, [dispatch, navigate, user])
 
   const startLogin = () => {
     setLoading(true)
