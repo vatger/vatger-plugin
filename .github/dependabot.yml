@@ -15,19 +15,33 @@ updates:
     labels:
       - dependencies
 
+### Backend
+
   - package-ecosystem: "uv"
     directory: "/service"
     schedule:
       interval: "daily"
     labels:
       - dependencies
+      - backend
 
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/service"
     schedule:
       interval: "daily"
     labels:
       - dependencies
+      - frontend
+
+### Frontend
+
+  - package-ecosystem: "docker"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+    labels:
+      - dependencies
+      - frontend
 
   - package-ecosystem: "npm"
     directory: "/"
