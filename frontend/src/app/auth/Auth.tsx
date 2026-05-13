@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router"
+import { useParams } from "react-router"
 import { Login } from "@/views/Login"
 import {
   AuthError,
