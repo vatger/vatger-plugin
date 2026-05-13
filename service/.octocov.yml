@@ -9,7 +9,7 @@ diff:
   datastores:
     - artifact://${GITHUB_REPOSITORY}/service
 body:
-  if: is_pull_request
+  if: is_pull_request && github.actor != 'dependabot[bot]'
   hideFooterLink: true
 summary:
   if: true
