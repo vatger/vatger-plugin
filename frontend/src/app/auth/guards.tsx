@@ -43,7 +43,7 @@ export const RequireAuth = ({ children }: { children: React.JSX.Element }) => {
     }
 
     resolveSession()
-  }, [user, dispatch, navigate])
+  }, [])
 
   if (!user) return null
 

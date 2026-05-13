@@ -28,7 +28,6 @@ export const Auth = () => {
   const [error, setError] = useState<AuthErrorCode | null>(null)
   const dispatch = useAppDispatch()
   const user = useAppSelector(selectUser)
-  const navigate = useNavigate()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -51,7 +50,7 @@ export const Auth = () => {
     if (user) return
 
     resolveSession()
-  }, [dispatch, navigate, user])
+  }, [])
 
   const startLogin = () => {
     setLoading(true)
