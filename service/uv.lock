@@ -329,17 +329,18 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.128.0"
+version = "0.136.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
     { name = "pydantic" },
     { name = "starlette" },
     { name = "typing-extensions" },
+    { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/52/08/8c8508db6c7b9aae8f7175046af41baad690771c9bcde676419965e338c7/fastapi-0.128.0.tar.gz", hash = "sha256:1cc179e1cef10a6be60ffe429f79b829dce99d8de32d7acb7e6c8dfdf7f2645a", size = 365682, upload-time = "2025-12-27T15:21:13.714Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/45/c130091c2dfa061bbfe3150f2a5091ef1adf149f2a8d2ae769ecaf6e99a2/fastapi-0.136.1.tar.gz", hash = "sha256:7af665ad7acfa0a3baf8983d393b6b471b9da10ede59c60045f49fbc89a0fa7f", size = 397448, upload-time = "2026-04-23T16:49:44.046Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/05/5cbb59154b093548acd0f4c7c474a118eda06da25aa75c616b72d8fcd92a/fastapi-0.128.0-py3-none-any.whl", hash = "sha256:aebd93f9716ee3b4f4fcfe13ffb7cf308d99c9f3ab5622d8877441072561582d", size = 103094, upload-time = "2025-12-27T15:21:12.154Z" },
+    { url = "https://files.pythonhosted.org/packages/5a/ff/2e4eca3ade2c22fe1dea7043b8ee9dabe47753349eb1b56a202de8af6349/fastapi-0.136.1-py3-none-any.whl", hash = "sha256:a6e9d7eeada96c93a4d69cb03836b44fa34e2854accb7244a1ece36cd4781c3f", size = 117683, upload-time = "2026-04-23T16:49:42.437Z" },
 ]
 
 [[package]]
@@ -1051,7 +1052,7 @@ requires-dist = [
     { name = "python-jose", specifier = ">=3.5.0" },
     { name = "requests", specifier = ">=2.33.1" },
     { name = "taskiq", specifier = ">=0.12.4" },
-    { name = "taskiq-fastapi", specifier = ">=0.4.0" },
+    { name = "taskiq-fastapi", specifier = ">=0.5.0" },
     { name = "taskiq-redis", specifier = ">=1.2.2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.46.0" },
 ]
@@ -1129,15 +1130,15 @@ wheels = [
 
 [[package]]
 name = "taskiq-fastapi"
-version = "0.4.0"
+version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
     { name = "taskiq" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cf/fe/f9e885a4dd6bd4d4224e3dee05d9b38bf58102a0ef5e553e812d654dfa72/taskiq_fastapi-0.4.0.tar.gz", hash = "sha256:f683ab0aab1ab2db117d1e121e5e534f3ba4a4e5f382177012e29eca986863fb", size = 5819, upload-time = "2025-11-29T15:22:59.191Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/62/6d6fcee0cf1d4f82c668cbf199ee8c89de229440698ae38eca5037c5261a/taskiq_fastapi-0.5.0.tar.gz", hash = "sha256:f8a3f1ed60be04a9e1f6a1edea321eebe4a38f320b395dcea1e996b7973b7307", size = 5889, upload-time = "2026-04-18T10:36:24.709Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/58/11eacc48d615703618f93ff44812409dca94cb465ab5cb173a8a90e079b1/taskiq_fastapi-0.4.0-py3-none-any.whl", hash = "sha256:9e7e57fa337b4fad2641c8761cafc7b54a63bf7bf726423a28fc2b15c55fd0bc", size = 5369, upload-time = "2025-11-29T15:23:00.185Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/77/ff0504698dd833b3275c9184cc818480a8a55e397eabd4a119ca49164d9d/taskiq_fastapi-0.5.0-py3-none-any.whl", hash = "sha256:a329ab7f7aa07a2a94751b297694ac97ba5fa470e0ed1e01e4fdf8e45dbc56bc", size = 5398, upload-time = "2026-04-18T10:36:23.603Z" },
 ]
 
 [[package]]
