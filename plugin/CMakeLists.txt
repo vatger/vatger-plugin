@@ -94,6 +94,7 @@ ADD_SUBDIRECTORY(external)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}_static PUBLIC
     libcurl
     nlohmann_json::nlohmann_json
+    sqlite3
 )
 
 SET(gtest_force_shared_crt on)
