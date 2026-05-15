@@ -7,3 +7,6 @@
 [submodule "plugin/external/sqlite"]
 	path = plugin/external/sqlite
 	url = https://github.com/sqlite/sqlite.git
+[submodule "plugin/external/curl"]
+	path = plugin/external/curl
+	url = https://github.com/curl/curl.git
