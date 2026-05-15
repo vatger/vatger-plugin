@@ -4,3 +4,6 @@
 [submodule "plugin/external/json"]
 	path = plugin/external/json
 	url = https://github.com/nlohmann/json.git
+[submodule "plugin/external/sqlite"]
+	path = plugin/external/sqlite
+	url = https://github.com/sqlite/sqlite.git
