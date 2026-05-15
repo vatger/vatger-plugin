@@ -89,7 +89,13 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_shared PUBLIC
     ${CMAKE_SOURCE_DIR}
 )
 
-INCLUDE(external/CMakeLists.txt)
+ADD_SUBDIRECTORY(external)
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}_static PUBLIC
+    libcurl
+    nlohmann_json::nlohmann_json
+    sqlite3
+)
 
 SET(gtest_force_shared_crt on)
 INCLUDE(CTest)

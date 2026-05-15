@@ -1,26 +1,101 @@
 name: Plugin CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'plugin/**'
-      - '.github/workflows/plugin-ci.yml'
-      - '.github/actions/plugin/**.yml'
+      - "plugin/external/**"
+      - "plugin/src/**"
+      - "plugin/tests/**"
+      - "plugin/CMakeLists.txt"
   pull_request:
     paths:
-      - 'plugin/**'
-      - '.github/workflows/plugin-ci.yml'
-      - '.github/actions/plugin/**.yml'
+      - "plugin/external/**"
+      - "plugin/src/**"
+      - "plugin/tests/**"
+      - "plugin/CMakeLists.txt"
+
+permissions:
+  contents: read
+
+env:
+  PROJECT_DIR: "plugin"
 
 jobs:
-  lint:
+  format-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Check formatting
-        uses: ./.github/actions/plugin/lint
+      - name: Run clang-format style check
+        uses: jidicula/clang-format-action@v4.18.0
         with:
-          source-dir: plugin
+          clang-format-version: "18"
+          check-path: "${{ env.PROJECT_DIR }}/src"
+          fallback-style: "Google"
+
+  build:
+    needs: format-check
+    runs-on: windows-2025
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run: cmake -S ${{ env.PROJECT_DIR }} -B build -A Win32
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Upload build
+        uses: actions/upload-artifact@v7
+        with:
+          name: build
+          path: build/
+          if-no-files-found: "error"
+
+  #   lint:
+  #     needs: build
+  #     runs-on: windows-2025
+  #     steps:
+  #       - name: Checkout
+  #         uses: actions/checkout@v6
+  #         with:
+  #           submodules: recursive
+
+  #       - name: Configure CMake (for compile_commands.json)
+  #         run: >
+  #           cmake -S ${{ env.PROJECT_DIR }} -B build-lint -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+  #       - name: Run static lint
+  #         shell: pwsh
+  #         run: |
+  #           $files = Get-ChildItem -Recurse src -Include *.cpp,*.cc,*.cxx,*.c,*.h,*.hpp |
+  #             ForEach-Object { $_.FullName }
+
+  #           clang-tidy `
+  #             -p build-lint `
+  #             --warnings-as-errors=* `
+  #             $files
+
+  unit-tests:
+    needs: build
+    runs-on: windows-2025
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download build
+        uses: actions/download-artifact@v8
+        with:
+          name: build
+          path: build/
+
+      - name: Run unit tests
+        uses: ./.github/actions/ctest
+        with:
+          label: unit
