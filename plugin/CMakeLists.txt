@@ -55,8 +55,10 @@ ADD_DEFINITIONS(
 
 SET(SOURCE_FILES
     src/api/CurlRestClient.cpp
+    src/auth/AuthService.cpp
     src/log/ConsoleLogger.cpp
     src/log/SqlLiteLogger.cpp
+    src/system/WindowsSystem.cpp
     src/Plugin.cpp
     src/main.cpp
 )
