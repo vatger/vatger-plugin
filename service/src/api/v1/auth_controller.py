@@ -6,11 +6,11 @@ from fastapi.responses import RedirectResponse
 from jose import JWTError
 
 from api.models.user_dto import UserInfoDTO
+from auth.auth_service import AuthService
 from containers.dependencies import DependencyContainer
 from core.security import create_access_token, create_refresh_token, decode_token
 from interfaces.repositories.user_repository_interface import UserRepositoryInterface
 from models.user import User
-from services.auth_service import AuthService
 from settings import settings
 
 if TYPE_CHECKING:

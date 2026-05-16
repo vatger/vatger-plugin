@@ -1,8 +1,8 @@
 from dependency_injector import containers, providers
 
+from auth.auth_service import AuthService
 from containers.datafeed import DatafeedContainer
 from containers.mongo_container import MongoContainer
-from services.auth_service import AuthService
 from services.plugin_token_service import PluginTokenService
 from services.vatsim_service import VatsimService
 from settings import Settings
