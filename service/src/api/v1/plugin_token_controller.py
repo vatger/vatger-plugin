@@ -1,7 +1,7 @@
 from typing import Annotated, Literal
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, Header, status
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 from fastapi.responses import RedirectResponse
 
 from api.models.plugin_token_dto import (
