@@ -14,7 +14,7 @@ from models.user import User
 from settings import settings
 
 if TYPE_CHECKING:
-    from models.auth import AuthModel
+    from auth.auth_model import AuthModel
 
 router = APIRouter(tags=["Auth"])
 
