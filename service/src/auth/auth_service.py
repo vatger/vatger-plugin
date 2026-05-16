@@ -3,16 +3,16 @@ from urllib.parse import urlencode
 
 from fastapi import HTTPException
 
+from auth.vatsim_auth_service import UserData, VatsimAuthService
 from core.security import create_access_token, create_refresh_token
 from interfaces.repositories.user_repository_interface import UserRepositoryInterface
 from models.auth import AuthModel
 from models.user import User
-from services.vatsim_service import UserData, VatsimService
 from settings import settings
 
 
 class AuthService:
-    def __init__(self, vatsim_service: VatsimService, user_repo: UserRepositoryInterface):
+    def __init__(self, vatsim_service: VatsimAuthService, user_repo: UserRepositoryInterface):
         self.vatsim_service = vatsim_service
         self.user_repo = user_repo
 
