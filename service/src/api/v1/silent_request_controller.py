@@ -10,7 +10,7 @@ from domain.request import SilentRequestModel
 from interfaces.repositories.request_repository_interface import DuplicateSilentRequestException
 from interfaces.services.request_service_interface import RequestServiceInterface
 
-router = APIRouter(prefix="/request")
+router = APIRouter(prefix="/request", tags=["SilentRequests"])
 
 RequestWrite = AuthAdapter("request:write")
 RequestDelete = AuthAdapter("request:delete")
