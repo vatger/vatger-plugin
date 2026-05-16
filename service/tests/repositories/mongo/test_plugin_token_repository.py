@@ -135,3 +135,32 @@ def test_uuid_serialization(repo):
 
     assert isinstance(fetched.user, uuid.UUID)
     assert fetched.user == user_id
+
+
+def test_get_by_token(repo):
+    created = repo.create(
+        PluginToken(
+            token="abc",
+            polling_secret="secret",
+        )
+    )
+
+    fetched = repo.get_by_token("abc")
+
+    assert fetched is not None
+    assert fetched.id == created.id
+    assert fetched.token == "abc"
+    assert fetched.polling_secret == "secret"
+
+
+def test_get_by_token_nonexistent(repo):
+    repo.create(
+        PluginToken(
+            token="abc",
+            polling_secret="secret",
+        )
+    )
+
+    fetched = repo.get_by_token("does-not-exist")
+
+    assert fetched is None

@@ -20,6 +20,12 @@ class MockPluginTokenRepository(PluginTokenRepositoryInterface):
         token = self.tokens.get(id)
         return copy.deepcopy(token) if token else None
 
+    def get_by_token(self, token: str) -> PluginToken | None:
+        for stored in self.tokens.values():
+            if stored.token == token:
+                return copy.deepcopy(stored)
+        return None
+
     def get_tokens(self) -> list[PluginToken]:
         return [copy.deepcopy(t) for t in self.tokens.values()]
 
