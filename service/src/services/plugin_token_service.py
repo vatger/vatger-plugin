@@ -49,6 +49,16 @@ class PluginTokenService(PluginTokenServiceInterface):
 
         return token
 
+    def _get_token_by_bearer_or_raise(self, bearer_token: str) -> PluginToken:
+        if not bearer_token:
+            raise UnauthorizedException()
+
+        token = self.repo.get_by_token(bearer_token)
+        if not token:
+            raise UnauthorizedException()
+
+        return token
+
     def start_plugin_auth_flow(self) -> PluginToken:
         token = PluginToken(token=generate_token(), polling_secret=generate_token())
 
@@ -116,3 +126,10 @@ class PluginTokenService(PluginTokenServiceInterface):
             raise PermissionDeniedException()
 
         self.repo.delete(token.id)
+
+    def get_active_token_from_bearer(self, bearer_token: str) -> PluginToken:
+        token = self._get_token_by_bearer_or_raise(bearer_token)
+
+        token.last_used = datetime.datetime.now(datetime.UTC)
+
+        return self.repo.update(token)

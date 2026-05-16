@@ -48,6 +48,10 @@ class MongoPluginTokenRepository(PluginTokenRepositoryInterface):
 
         return self._doc_to_token(doc)
 
+    def get_by_token(self, token: str) -> PluginToken | None:
+        doc = self.collection.find_one({"token": token})
+        return self._doc_to_token(doc)
+
     def get_tokens(self) -> list[PluginToken]:
         docs = self.collection.find()
 

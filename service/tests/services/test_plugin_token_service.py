@@ -204,3 +204,71 @@ def test_multiple_tokens_same_user(service, user1):
     tokens = service.get_tokens(scope="own", user=user1)
 
     assert len(tokens) == 2
+
+
+def test_get_active_token_from_bearer_returns_token(service, user1):
+    token = service.start_plugin_auth_flow()
+    service.user_authorize_plugin(str(token.id), str(user1.id), "label")
+
+    resolved = service.get_active_token_from_bearer(token.token)
+
+    assert resolved is not None
+    assert resolved.id == token.id
+    assert resolved.token == token.token
+    assert resolved.user == user1.id
+    assert resolved.label == "label"
+
+
+def test_get_active_token_from_bearer_updates_last_used(service, user1):
+    token = service.start_plugin_auth_flow()
+    service.user_authorize_plugin(str(token.id), str(user1.id), "label")
+
+    before = service.repo.get(token.id)
+    previous_last_used = before.last_used
+
+    resolved = service.get_active_token_from_bearer(token.token)
+
+    assert resolved.last_used is not None
+    assert resolved.last_used >= previous_last_used
+
+    stored = service.repo.get(token.id)
+    assert stored.last_used == resolved.last_used
+
+
+def test_get_active_token_from_bearer_rejects_empty_token(service):
+    with pytest.raises(UnauthorizedException):
+        service.get_active_token_from_bearer("")
+
+
+def test_get_active_token_from_bearer_rejects_none_token(service):
+    with pytest.raises(UnauthorizedException):
+        service.get_active_token_from_bearer(None)  # type: ignore[arg-type]
+
+
+def test_get_active_token_from_bearer_rejects_unknown_token(service):
+    with pytest.raises(UnauthorizedException):
+        service.get_active_token_from_bearer("does-not-exist")
+
+
+def test_get_active_token_from_bearer_revoked_token_looks_unknown(service, user1):
+    token = service.start_plugin_auth_flow()
+    service.user_authorize_plugin(str(token.id), str(user1.id), "label")
+
+    service.revoke_token(str(token.id), user1)
+
+    with pytest.raises(UnauthorizedException):
+        service.get_active_token_from_bearer(token.token)
+
+
+def test_get_active_token_from_bearer_invalid_and_revoked_fail_same_exception(service, user1):
+    token = service.start_plugin_auth_flow()
+    service.user_authorize_plugin(str(token.id), str(user1.id), "label")
+    service.revoke_token(str(token.id), user1)
+
+    with pytest.raises(UnauthorizedException) as revoked_exc:
+        service.get_active_token_from_bearer(token.token)
+
+    with pytest.raises(UnauthorizedException) as invalid_exc:
+        service.get_active_token_from_bearer("invalid-token")
+
+    assert type(revoked_exc.value) is type(invalid_exc.value)

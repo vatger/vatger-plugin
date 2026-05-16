@@ -29,3 +29,10 @@ class PluginTokenDTO(BaseModel):
     label: str | None = None
     token: str
     last_used: datetime
+
+
+class PluginTokenIntrospectionDTO(BaseModel):
+    active: bool = False
+    user_id: str
+    label: str | None
+    last_used: datetime

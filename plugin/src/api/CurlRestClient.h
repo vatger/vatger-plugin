@@ -7,32 +7,33 @@
 #include <mutex>
 
 #include "IRestClient.h"
-#include "log/ILogger.h"
 
 namespace api {
 class CurlRestClient : public interfaces::IRestClient {
-   private:
-    std::shared_ptr<logging::ILogger> m_logger;
-
    public:
-    CurlRestClient(std::shared_ptr<logging::ILogger> logger);
+    CurlRestClient();
     ~CurlRestClient();
 
-    interfaces::HttpResponse get(const std::string& url,
-                                 const std::map<std::string, std::string>& headers = {}) override;
-    interfaces::HttpResponse post(const std::string& url, const std::string& body,
-                                  const std::map<std::string, std::string>& headers = {}) override;
-    interfaces::HttpResponse put(const std::string& url, const std::string& body,
-                                 const std::map<std::string, std::string>& headers = {}) override;
-    interfaces::HttpResponse patch(const std::string& url, const std::string& body,
-                                   const std::map<std::string, std::string>& headers = {}) override;
-    interfaces::HttpResponse del(const std::string& url,
-                                 const std::map<std::string, std::string>& headers = {}) override;
+    interfaces::HttpResponse get(const std::string_view &url,
+                                 const std::unordered_map<std::string, std::string> &headers = {}) override;
+
+    interfaces::HttpResponse post(const std::string_view &url, const std::string_view &body,
+                                  const std::unordered_map<std::string, std::string> &headers = {}) override;
+
+    interfaces::HttpResponse put(const std::string_view &url, const std::string_view &body,
+                                 const std::unordered_map<std::string, std::string> &headers = {}) override;
+
+    interfaces::HttpResponse patch(const std::string_view &url, const std::string_view &body,
+                                   const std::unordered_map<std::string, std::string> &headers = {}) override;
+
+    interfaces::HttpResponse del(const std::string_view &url,
+                                 const std::unordered_map<std::string, std::string> &headers = {}) override;
 
    private:
+    struct curl_slist *m_commonHeaders = nullptr;
     struct Communication {
         std::mutex lock;
-        CURL* socket;
+        CURL *socket;
 
         Communication() : lock(), socket(curl_easy_init()) {}
     };
