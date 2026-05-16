@@ -4,7 +4,7 @@ from app.broker import broker
 from containers.dependencies import DependencyContainer
 
 if TYPE_CHECKING:
-    from domain.datafeed import DatafeedModel
+    from models.datafeed import DatafeedModel
 
 
 @broker.task("poll_datafeed")

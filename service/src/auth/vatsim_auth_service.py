@@ -64,7 +64,7 @@ class UserResponse:
     data: UserData
 
 
-class VatsimService:
+class VatsimAuthService:
     BASE_URL = settings.VATSIM_AUTH_URL
 
     def exchange_code(self, code: str) -> AuthResponse:
