@@ -1,7 +1,6 @@
 from dependency_injector import containers, providers
 from pymongo import MongoClient
 
-from repositories.mongo.api_key_repository import MongoAPIKeyRepository
 from repositories.mongo.plugin_token_repository import MongoPluginTokenRepository
 from repositories.mongo.user_repository import MongoUserRepository
 
@@ -18,16 +17,6 @@ class MongoContainer(containers.DeclarativeContainer):
         lambda client, name: client[name],
         mongo_client,
         name=config.mongo.database,
-    )
-
-    api_keys_collection = providers.Singleton(
-        lambda db: db["api-keys"],
-        mongo_database,
-    )
-
-    api_key_repository = providers.Singleton(
-        MongoAPIKeyRepository,
-        collection=api_keys_collection,
     )
 
     user_collection = providers.Singleton(
