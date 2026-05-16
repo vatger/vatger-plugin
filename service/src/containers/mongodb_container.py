@@ -5,7 +5,7 @@ from repositories.mongo.plugin_token_repository import MongoPluginTokenRepositor
 from repositories.mongo.user_repository import MongoUserRepository
 
 
-class MongoContainer(containers.DeclarativeContainer):
+class MongoDBContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
 
     mongo_client = providers.Singleton(

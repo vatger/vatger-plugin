@@ -3,7 +3,7 @@ from dependency_injector import containers, providers
 from auth.auth_service import AuthService
 from auth.vatsim_auth_service import VatsimAuthService
 from containers.datafeed import DatafeedContainer
-from containers.mongo_container import MongoContainer
+from containers.mongodb_container import MongoDBContainer
 from services.plugin_token_service import PluginTokenService
 from settings import Settings
 
@@ -13,7 +13,7 @@ class DependencyContainer(containers.DeclarativeContainer):
 
     config.from_pydantic(Settings())
 
-    mongo_container = providers.Container(MongoContainer, config=config)
+    mongo_container = providers.Container(MongoDBContainer, config=config)
     datafeed_container = providers.Container(DatafeedContainer, config=config)
 
     # OAuth
