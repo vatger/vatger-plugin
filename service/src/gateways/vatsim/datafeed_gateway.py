@@ -1,7 +1,7 @@
 import httpx
 
-from domain.datafeed import DatafeedModel
 from interfaces.gateways.datafeed_gateway_interface import DatafeedGatewayInterface
+from models.datafeed import DatafeedModel
 
 
 class VatsimDatafeedGateway(DatafeedGatewayInterface):

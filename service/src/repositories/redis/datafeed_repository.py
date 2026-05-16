@@ -1,7 +1,7 @@
 from redis.asyncio import Redis
 
-from domain.datafeed import DatafeedModel, PilotModel
 from interfaces.repositories.datafeed_repository_interface import DatafeedRepositoryInterface
+from models.datafeed import DatafeedModel, PilotModel
 
 
 class RedisDatafeedRepository(DatafeedRepositoryInterface):
