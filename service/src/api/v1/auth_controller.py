@@ -16,7 +16,7 @@ from settings import settings
 if TYPE_CHECKING:
     from models.auth import AuthModel
 
-router = APIRouter()
+router = APIRouter(tags=["Auth"])
 
 
 def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
