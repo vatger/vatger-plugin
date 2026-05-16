@@ -13,11 +13,9 @@ static std::size_t receiveCurlData(void* ptr, std::size_t size, std::size_t nmem
     return size * nmemb;
 }
 
-CurlRestClient::CurlRestClient(std::shared_ptr<logging::ILogger> logger)
-    : m_logger(logger), m_getRequest(), m_postRequest(), m_patchRequest(), m_deleteRequest() {
-    struct curl_slist* commonHeaders = nullptr;
-    commonHeaders = curl_slist_append(commonHeaders, "Accept: application/json");
-    commonHeaders = curl_slist_append(commonHeaders, "Content-Type: application/json");
+CurlRestClient::CurlRestClient() : m_getRequest(), m_postRequest(), m_patchRequest(), m_deleteRequest() {
+    m_commonHeaders = curl_slist_append(m_commonHeaders, "Accept: application/json");
+    m_commonHeaders = curl_slist_append(m_commonHeaders, "Content-Type: application/json");
 
     // Configure GET
     curl_easy_setopt(m_getRequest.socket, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -34,7 +32,7 @@ CurlRestClient::CurlRestClient(std::shared_ptr<logging::ILogger> logger)
     curl_easy_setopt(m_postRequest.socket, CURLOPT_WRITEFUNCTION, receiveCurlData);
     curl_easy_setopt(m_postRequest.socket, CURLOPT_CUSTOMREQUEST, "POST");
     curl_easy_setopt(m_postRequest.socket, CURLOPT_VERBOSE, 1);
-    curl_easy_setopt(m_postRequest.socket, CURLOPT_HTTPHEADER, commonHeaders);
+    curl_easy_setopt(m_postRequest.socket, CURLOPT_HTTPHEADER, m_commonHeaders);
 
     // Configure PUT
     curl_easy_setopt(m_putRequest.socket, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -43,7 +41,7 @@ CurlRestClient::CurlRestClient(std::shared_ptr<logging::ILogger> logger)
     curl_easy_setopt(m_putRequest.socket, CURLOPT_WRITEFUNCTION, receiveCurlData);
     curl_easy_setopt(m_putRequest.socket, CURLOPT_CUSTOMREQUEST, "PUT");
     curl_easy_setopt(m_putRequest.socket, CURLOPT_VERBOSE, 1);
-    curl_easy_setopt(m_putRequest.socket, CURLOPT_HTTPHEADER, commonHeaders);
+    curl_easy_setopt(m_putRequest.socket, CURLOPT_HTTPHEADER, m_commonHeaders);
 
     // Configure PATCH
     curl_easy_setopt(m_patchRequest.socket, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -52,7 +50,7 @@ CurlRestClient::CurlRestClient(std::shared_ptr<logging::ILogger> logger)
     curl_easy_setopt(m_patchRequest.socket, CURLOPT_WRITEFUNCTION, receiveCurlData);
     curl_easy_setopt(m_patchRequest.socket, CURLOPT_CUSTOMREQUEST, "PATCH");
     curl_easy_setopt(m_patchRequest.socket, CURLOPT_VERBOSE, 1);
-    curl_easy_setopt(m_patchRequest.socket, CURLOPT_HTTPHEADER, commonHeaders);
+    curl_easy_setopt(m_patchRequest.socket, CURLOPT_HTTPHEADER, m_commonHeaders);
 
     // Configure DELETE
     curl_easy_setopt(m_deleteRequest.socket, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -64,6 +62,8 @@ CurlRestClient::CurlRestClient(std::shared_ptr<logging::ILogger> logger)
 }
 
 CurlRestClient::~CurlRestClient() {
+    curl_slist_free_all(m_commonHeaders);
+
     if (nullptr != m_getRequest.socket) {
         std::lock_guard guard(m_getRequest.lock);
         curl_easy_cleanup(m_getRequest.socket);
@@ -95,8 +95,8 @@ CurlRestClient::~CurlRestClient() {
     }
 }
 
-interfaces::HttpResponse CurlRestClient::get(const std::string& url,
-                                             const std::map<std::string, std::string>& headers) {
+interfaces::HttpResponse CurlRestClient::get(const std::string_view& url,
+                                             const std::unordered_map<std::string, std::string>& headers) {
     std::lock_guard guard(this->m_getRequest.lock);
     interfaces::HttpResponse response;
 
@@ -108,8 +108,13 @@ interfaces::HttpResponse CurlRestClient::get(const std::string& url,
 
     std::string responseBody;
 
-    // apply headers (if provided)
     struct curl_slist* chunk = nullptr;
+    // apply common header
+    for (auto* node = m_commonHeaders; node != nullptr; node = node->next) {
+        chunk = curl_slist_append(chunk, node->data);
+    }
+
+    // apply headers (if provided)
     for (const auto& [key, value] : headers) {
         std::string header = key + ": " + value;
         chunk = curl_slist_append(chunk, header.c_str());
@@ -119,7 +124,7 @@ interfaces::HttpResponse CurlRestClient::get(const std::string& url,
     }
 
     // configure request
-    curl_easy_setopt(m_getRequest.socket, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(m_getRequest.socket, CURLOPT_URL, url.data());
     curl_easy_setopt(m_getRequest.socket, CURLOPT_WRITEDATA, &responseBody);
 
     // perform request
@@ -143,8 +148,8 @@ interfaces::HttpResponse CurlRestClient::get(const std::string& url,
     return response;
 }
 
-interfaces::HttpResponse CurlRestClient::post(const std::string& url, const std::string& body,
-                                              const std::map<std::string, std::string>& headers) {
+interfaces::HttpResponse CurlRestClient::post(const std::string_view& url, const std::string_view& body,
+                                              const std::unordered_map<std::string, std::string>& headers) {
     std::lock_guard guard(this->m_postRequest.lock);
     interfaces::HttpResponse response;
 
@@ -156,8 +161,13 @@ interfaces::HttpResponse CurlRestClient::post(const std::string& url, const std:
 
     std::string responseBody;
 
-    // apply headers (if provided)
     struct curl_slist* chunk = nullptr;
+    // apply common header
+    for (auto* node = m_commonHeaders; node != nullptr; node = node->next) {
+        chunk = curl_slist_append(chunk, node->data);
+    }
+
+    // apply headers (if provided)
     for (const auto& [key, value] : headers) {
         std::string header = key + ": " + value;
         chunk = curl_slist_append(chunk, header.c_str());
@@ -167,8 +177,8 @@ interfaces::HttpResponse CurlRestClient::post(const std::string& url, const std:
     }
 
     // configure request
-    curl_easy_setopt(m_postRequest.socket, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(m_postRequest.socket, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(m_postRequest.socket, CURLOPT_URL, url.data());
+    curl_easy_setopt(m_postRequest.socket, CURLOPT_POSTFIELDS, body.data());
     curl_easy_setopt(m_postRequest.socket, CURLOPT_POSTFIELDSIZE, static_cast<long>(body.size()));
     curl_easy_setopt(m_postRequest.socket, CURLOPT_WRITEDATA, &responseBody);
 
@@ -193,8 +203,8 @@ interfaces::HttpResponse CurlRestClient::post(const std::string& url, const std:
     return response;
 }
 
-interfaces::HttpResponse CurlRestClient::put(const std::string& url, const std::string& body,
-                                             const std::map<std::string, std::string>& headers) {
+interfaces::HttpResponse CurlRestClient::put(const std::string_view& url, const std::string_view& body,
+                                             const std::unordered_map<std::string, std::string>& headers) {
     std::lock_guard guard(this->m_putRequest.lock);
     interfaces::HttpResponse response;
 
@@ -206,8 +216,13 @@ interfaces::HttpResponse CurlRestClient::put(const std::string& url, const std::
 
     std::string responseBody;
 
-    // apply headers (if provided)
     struct curl_slist* chunk = nullptr;
+    // apply common header
+    for (auto* node = m_commonHeaders; node != nullptr; node = node->next) {
+        chunk = curl_slist_append(chunk, node->data);
+    }
+
+    // apply headers (if provided)
     for (const auto& [key, value] : headers) {
         std::string header = key + ": " + value;
         chunk = curl_slist_append(chunk, header.c_str());
@@ -217,8 +232,8 @@ interfaces::HttpResponse CurlRestClient::put(const std::string& url, const std::
     }
 
     // configure request
-    curl_easy_setopt(m_putRequest.socket, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(m_putRequest.socket, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(m_putRequest.socket, CURLOPT_URL, url.data());
+    curl_easy_setopt(m_putRequest.socket, CURLOPT_POSTFIELDS, body.data());
     curl_easy_setopt(m_putRequest.socket, CURLOPT_POSTFIELDSIZE, static_cast<long>(body.size()));
     curl_easy_setopt(m_putRequest.socket, CURLOPT_WRITEDATA, &responseBody);
 
@@ -243,8 +258,8 @@ interfaces::HttpResponse CurlRestClient::put(const std::string& url, const std::
     return response;
 }
 
-interfaces::HttpResponse CurlRestClient::patch(const std::string& url, const std::string& body,
-                                               const std::map<std::string, std::string>& headers) {
+interfaces::HttpResponse CurlRestClient::patch(const std::string_view& url, const std::string_view& body,
+                                               const std::unordered_map<std::string, std::string>& headers) {
     std::lock_guard guard(this->m_patchRequest.lock);
     interfaces::HttpResponse response;
 
@@ -256,8 +271,13 @@ interfaces::HttpResponse CurlRestClient::patch(const std::string& url, const std
 
     std::string responseBody;
 
-    // apply headers
     struct curl_slist* chunk = nullptr;
+    // apply common header
+    for (auto* node = m_commonHeaders; node != nullptr; node = node->next) {
+        chunk = curl_slist_append(chunk, node->data);
+    }
+
+    // apply headers (if provided)
     for (const auto& [key, value] : headers) {
         std::string header = key + ": " + value;
         chunk = curl_slist_append(chunk, header.c_str());
@@ -267,8 +287,8 @@ interfaces::HttpResponse CurlRestClient::patch(const std::string& url, const std
     }
 
     // configure request
-    curl_easy_setopt(m_patchRequest.socket, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(m_patchRequest.socket, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(m_patchRequest.socket, CURLOPT_URL, url.data());
+    curl_easy_setopt(m_patchRequest.socket, CURLOPT_POSTFIELDS, body.data());
     curl_easy_setopt(m_patchRequest.socket, CURLOPT_POSTFIELDSIZE, static_cast<long>(body.size()));
     curl_easy_setopt(m_patchRequest.socket, CURLOPT_WRITEDATA, &responseBody);
 
@@ -293,8 +313,8 @@ interfaces::HttpResponse CurlRestClient::patch(const std::string& url, const std
     return response;
 }
 
-interfaces::HttpResponse CurlRestClient::del(const std::string& url,
-                                             const std::map<std::string, std::string>& headers) {
+interfaces::HttpResponse CurlRestClient::del(const std::string_view& url,
+                                             const std::unordered_map<std::string, std::string>& headers) {
     std::lock_guard guard(this->m_deleteRequest.lock);
     interfaces::HttpResponse response;
 
@@ -306,8 +326,13 @@ interfaces::HttpResponse CurlRestClient::del(const std::string& url,
 
     std::string responseBody;
 
-    // apply headers
     struct curl_slist* chunk = nullptr;
+    // apply common header
+    for (auto* node = m_commonHeaders; node != nullptr; node = node->next) {
+        chunk = curl_slist_append(chunk, node->data);
+    }
+
+    // apply headers (if provided)
     for (const auto& [key, value] : headers) {
         std::string header = key + ": " + value;
         chunk = curl_slist_append(chunk, header.c_str());
@@ -317,7 +342,7 @@ interfaces::HttpResponse CurlRestClient::del(const std::string& url,
     }
 
     // configure request
-    curl_easy_setopt(m_deleteRequest.socket, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(m_deleteRequest.socket, CURLOPT_URL, url.data());
     curl_easy_setopt(m_deleteRequest.socket, CURLOPT_WRITEDATA, &responseBody);
 
     // perform request
