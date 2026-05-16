@@ -25,7 +25,7 @@ from services.plugin_token_service import (
 )
 from settings import settings
 
-router = APIRouter(prefix="/plugin-token")
+router = APIRouter(prefix="/plugin-token", tags=["Plugin Token"])
 
 
 @router.post("/start")
