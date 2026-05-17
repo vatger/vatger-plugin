@@ -34,6 +34,31 @@ classDiagram
         update_user(user: User)
     }
 
+    %% Plugin Token:
+
+    class PluginTokenController {
+    }
+
+    PluginTokenController ..> PluginTokenServiceInterface
+
+    class PluginTokenServiceInterface {
+        start_plugin_auth_flow() PluginToken
+        get_authorization_redirect(token_id: str, user_id: str, label: str) str 
+        exchange_polling_secret_for_token(token_id: str, secret: str) str | None
+        get_tokens(scope: Literal["own", "all"], user: User)
+        revoke_token(token_id: str, user: User)
+    }
+
+    PluginTokenServiceInterface ..> PluginTokenRepositoryInterface 
+
+    class PluginTokenServiceInterface {
+        create(token: PluginToken) PluginToken
+        get(id: uuid.UUID) PluginToken
+        get_tokens() list[PluginToken]
+        get_tokens_by_user(user_id: uuid.UUID) list[PluginToken]
+        update(token: PluginToken)
+        delete(id: uuid.UUID)
+    }
 
     %% Datafeed:
 
