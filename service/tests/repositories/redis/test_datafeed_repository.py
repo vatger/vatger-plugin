@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 import fakeredis
 import pytest
 
-from models.datafeed import DatafeedModel, PilotModel
+from models.datafeed import ControllerModel, DatafeedModel, PilotModel
 from repositories.redis.datafeed_repository import RedisDatafeedRepository
 
 
@@ -21,6 +21,7 @@ def make_pilot(**overrides) -> PilotModel:
     now = datetime.now(UTC)
 
     data = {
+        "cid": 90001,
         "callsign": "TEST123",
         "latitude": 51.0,
         "longitude": 8.0,
@@ -38,21 +39,47 @@ def make_pilot(**overrides) -> PilotModel:
     return PilotModel.model_validate(data)
 
 
-def make_feed(pilots: list[PilotModel]) -> DatafeedModel:
+def make_controller(**overrides) -> ControllerModel:
+    now = datetime.now(UTC)
+
+    data = {
+        "cid": 1000001,
+        "name": "Max Mustermann",
+        "callsign": "EDDF_APP",
+        "frequency": "120.800",
+        "facility": 5,
+        "rating": 5,
+        "server": "EDDF",
+        "visual_range": 200,
+        "text_atis": None,
+        "logon_time": now,
+        "last_updated": now,
+    }
+
+    data.update(overrides)
+    return ControllerModel.model_validate(data)
+
+
+def make_feed(
+    pilots: list[PilotModel] | None = None,
+    controllers: list[ControllerModel] | None = None,
+) -> DatafeedModel:
     return DatafeedModel.model_validate({
-        "pilots": pilots,
-        "controllers": [],
+        "pilots": pilots or [],
+        "controllers": controllers or [],
     })
 
 
 @pytest.mark.asyncio
 async def test_update_stores_callsigns(repository):
-    feed = make_feed([
-        make_pilot(callsign="ABC123"),
-        make_pilot(callsign="XYZ789"),
-    ])
-
-    await repository.update(feed)
+    await repository.update(
+        make_feed(
+            pilots=[
+                make_pilot(callsign="ABC123", cid=9000001),
+                make_pilot(callsign="XYZ789", cid=9000002),
+            ]
+        )
+    )
 
     assert await repository.has_callsign("ABC123") is True
     assert await repository.has_callsign("XYZ789") is True
@@ -60,45 +87,73 @@ async def test_update_stores_callsigns(repository):
 
 
 @pytest.mark.asyncio
-async def test_get_pilot_data_returns_model(repository):
-    feed = make_feed([
-        make_pilot(callsign="ABC123", latitude=50.0, longitude=8.0),
-    ])
+async def test_get_pilot_by_callsign_returns_model(repository):
+    await repository.update(
+        make_feed(
+            pilots=[
+                make_pilot(callsign="ABC123", cid=9000001, latitude=50.0, longitude=8.0),
+            ]
+        )
+    )
 
-    await repository.update(feed)
-
-    pilot = await repository.get_pilot_data("ABC123")
+    pilot = await repository.get_pilot_by_callsign("ABC123")
 
     assert isinstance(pilot, PilotModel)
     assert pilot.callsign == "ABC123"
+    assert pilot.cid == 9000001
     pytest.approx(pilot.latitude, 50.0)
     pytest.approx(pilot.longitude, 8.0)
 
 
 @pytest.mark.asyncio
-async def test_get_pilot_data_missing_returns_none(repository):
-    feed = make_feed([])
+async def test_get_pilot_by_callsign_missing_returns_none(repository):
+    await repository.update(make_feed())
 
-    await repository.update(feed)
+    assert await repository.get_pilot_by_callsign("MISSING") is None
 
-    result = await repository.get_pilot_data("MISSING")
 
-    assert result is None
+@pytest.mark.asyncio
+async def test_get_pilot_by_cid_returns_model(repository):
+    await repository.update(
+        make_feed(
+            pilots=[
+                make_pilot(callsign="ABC123", cid=9000001),
+            ]
+        )
+    )
+
+    pilot = await repository.get_pilot_by_cid(9000001)
+
+    assert isinstance(pilot, PilotModel)
+    assert pilot.callsign == "ABC123"
+    assert pilot.cid == 9000001
+
+
+@pytest.mark.asyncio
+async def test_get_pilot_by_cid_missing_returns_none(repository):
+    await repository.update(make_feed())
+
+    assert await repository.get_pilot_by_cid(9999999) is None
 
 
 @pytest.mark.asyncio
 async def test_update_removes_old_callsigns(repository):
-    feed1 = make_feed([
-        make_pilot(callsign="OLD1"),
-        make_pilot(callsign="OLD2"),
-    ])
+    await repository.update(
+        make_feed(
+            pilots=[
+                make_pilot(callsign="OLD1", cid=9000001),
+                make_pilot(callsign="OLD2", cid=9000002),
+            ]
+        )
+    )
 
-    feed2 = make_feed([
-        make_pilot(callsign="NEW1"),
-    ])
-
-    await repository.update(feed1)
-    await repository.update(feed2)
+    await repository.update(
+        make_feed(
+            pilots=[
+                make_pilot(callsign="NEW1", cid=9000003),
+            ]
+        )
+    )
 
     assert await repository.has_callsign("OLD1") is False
     assert await repository.has_callsign("OLD2") is False
@@ -107,15 +162,153 @@ async def test_update_removes_old_callsigns(repository):
 
 @pytest.mark.asyncio
 async def test_old_pilot_data_removed(repository):
-    feed1 = make_feed([
-        make_pilot(callsign="OLD1"),
-    ])
+    await repository.update(make_feed(pilots=[make_pilot(callsign="OLD1", cid=9000001)]))
+    await repository.update(make_feed())
 
-    feed2 = make_feed([])
+    assert await repository.get_pilot_by_callsign("OLD1") is None
 
-    await repository.update(feed1)
-    await repository.update(feed2)
 
-    pilot = await repository.get_pilot_data("OLD1")
+@pytest.mark.asyncio
+async def test_old_pilot_cid_index_removed(repository):
+    await repository.update(make_feed(pilots=[make_pilot(callsign="OLD1", cid=9000001)]))
+    await repository.update(make_feed())
 
-    assert pilot is None
+    assert await repository.get_pilot_by_cid(9000001) is None
+
+
+@pytest.mark.asyncio
+async def test_update_stores_controllers(repository):
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_APP", cid=1000001),
+                make_controller(callsign="EDDF_TWR", cid=1000002),
+            ]
+        )
+    )
+
+    assert await repository.has_controller("EDDF_APP") is True
+    assert await repository.has_controller("EDDF_TWR") is True
+    assert await repository.has_controller("EDDF_GND") is False
+
+
+@pytest.mark.asyncio
+async def test_get_controller_by_callsign_returns_model(repository):
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_APP", cid=1000001, frequency="120.800"),
+            ]
+        )
+    )
+
+    controller = await repository.get_controller_by_callsign("EDDF_APP")
+
+    assert isinstance(controller, ControllerModel)
+    assert controller.callsign == "EDDF_APP"
+    assert controller.cid == 1000001
+    assert controller.frequency == "120.800"
+
+
+@pytest.mark.asyncio
+async def test_get_controller_by_callsign_missing_returns_none(repository):
+    await repository.update(make_feed())
+
+    assert await repository.get_controller_by_callsign("EDDF_APP") is None
+
+
+@pytest.mark.asyncio
+async def test_get_controller_by_cid_returns_model(repository):
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_APP", cid=1000001),
+            ]
+        )
+    )
+
+    controller = await repository.get_controller_by_cid(1000001)
+
+    assert isinstance(controller, ControllerModel)
+    assert controller.callsign == "EDDF_APP"
+    assert controller.cid == 1000001
+
+
+@pytest.mark.asyncio
+async def test_get_controller_by_cid_missing_returns_none(repository):
+    await repository.update(make_feed())
+
+    assert await repository.get_controller_by_cid(9999999) is None
+
+
+@pytest.mark.asyncio
+async def test_update_removes_old_controllers(repository):
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_APP", cid=1000001),
+                make_controller(callsign="EDDF_TWR", cid=1000002),
+            ]
+        )
+    )
+
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_GND", cid=1000003),
+            ]
+        )
+    )
+
+    assert await repository.has_controller("EDDF_APP") is False
+    assert await repository.has_controller("EDDF_TWR") is False
+    assert await repository.has_controller("EDDF_GND") is True
+
+
+@pytest.mark.asyncio
+async def test_old_controller_data_removed(repository):
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_APP", cid=1000001),
+            ]
+        )
+    )
+    await repository.update(make_feed())
+
+    assert await repository.get_controller_by_callsign("EDDF_APP") is None
+
+
+@pytest.mark.asyncio
+async def test_old_controller_cid_index_removed(repository):
+    await repository.update(
+        make_feed(
+            controllers=[
+                make_controller(callsign="EDDF_APP", cid=1000001),
+            ]
+        )
+    )
+    await repository.update(make_feed())
+
+    assert await repository.get_controller_by_cid(1000001) is None
+
+
+# --- Cross-entity tests ---
+
+
+@pytest.mark.asyncio
+async def test_pilots_and_controllers_are_independent(repository):
+    await repository.update(
+        make_feed(
+            pilots=[make_pilot(callsign="ABC123", cid=9000001)],
+            controllers=[make_controller(callsign="EDDF_APP", cid=1000001)],
+        )
+    )
+
+    assert await repository.has_callsign("ABC123") is True
+    assert await repository.has_controller("EDDF_APP") is True
+
+    await repository.update(make_feed(pilots=[make_pilot(callsign="ABC123", cid=9000001)]))
+
+    assert await repository.has_callsign("ABC123") is True
+    assert await repository.has_controller("EDDF_APP") is False
