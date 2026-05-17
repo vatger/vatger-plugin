@@ -1,9 +1,10 @@
 from typing import Annotated, Literal
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 
+from api.guards import get_optional_user, get_plugin_token, get_user
 from api.models.plugin_token_dto import (
     AuthorizePluginDTO,
     AuthorizePluginPollDTO,
@@ -12,7 +13,6 @@ from api.models.plugin_token_dto import (
     PluginTokenStartDTO,
     PollPluginTokenDTO,
 )
-from api.v1.auth_controller import get_optional_user, get_user
 from containers.dependencies import DependencyContainer
 from interfaces.services.plugin_token_service_interface import PluginTokenServiceInterface
 from models.plugin_token import PluginToken
@@ -144,34 +144,6 @@ def revoke_token(
     ],
 ):
     pt_service.revoke_token(token_id, user)
-
-
-@inject
-def get_plugin_token(
-    pt_service: Annotated[
-        PluginTokenServiceInterface,
-        Depends(Provide(DependencyContainer.plugin_token_service)),
-    ],
-    authorization: Annotated[str | None, Header(alias="Authorization")] = None,
-) -> PluginToken:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Unauthorized",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    if authorization is None:
-        raise credentials_exception
-
-    scheme, _, bearer_token = authorization.partition(" ")
-
-    if scheme.lower() != "bearer" or not bearer_token:
-        raise credentials_exception
-
-    try:
-        return pt_service.get_active_token_from_bearer(bearer_token)
-    except UnauthorizedException as exc:
-        raise credentials_exception from exc
 
 
 @router.get("/me")
