@@ -94,7 +94,7 @@ class RedisDatafeedRepository(DatafeedRepositoryInterface):
         if new_callsigns:
             pipe.sadd(self.CONTROLLERS_SET_KEY, *new_callsigns)
 
-    async def has_callsign(self, callsign: str) -> bool:
+    async def has_pilot(self, callsign: str) -> bool:
         return bool(await self.redis.sismember(self.CALLSIGNS_SET_KEY, callsign))
 
     async def get_pilot_by_callsign(self, callsign: str) -> PilotModel | None:
