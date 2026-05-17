@@ -51,7 +51,7 @@ classDiagram
 
     PluginTokenServiceInterface ..> PluginTokenRepositoryInterface 
 
-    class PluginTokenServiceInterface {
+    class PluginTokenRepositoryInterface {
         create(token: PluginToken) PluginToken
         get(id: uuid.UUID) PluginToken
         get_tokens() list[PluginToken]
