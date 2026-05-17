@@ -81,9 +81,9 @@ async def test_update_stores_callsigns(repository):
         )
     )
 
-    assert await repository.has_callsign("ABC123") is True
-    assert await repository.has_callsign("XYZ789") is True
-    assert await repository.has_callsign("NON_EXISTING") is False
+    assert await repository.has_pilot("ABC123") is True
+    assert await repository.has_pilot("XYZ789") is True
+    assert await repository.has_pilot("NON_EXISTING") is False
 
 
 @pytest.mark.asyncio
@@ -155,9 +155,9 @@ async def test_update_removes_old_callsigns(repository):
         )
     )
 
-    assert await repository.has_callsign("OLD1") is False
-    assert await repository.has_callsign("OLD2") is False
-    assert await repository.has_callsign("NEW1") is True
+    assert await repository.has_pilot("OLD1") is False
+    assert await repository.has_pilot("OLD2") is False
+    assert await repository.has_pilot("NEW1") is True
 
 
 @pytest.mark.asyncio
@@ -305,10 +305,10 @@ async def test_pilots_and_controllers_are_independent(repository):
         )
     )
 
-    assert await repository.has_callsign("ABC123") is True
+    assert await repository.has_pilot("ABC123") is True
     assert await repository.has_controller("EDDF_APP") is True
 
     await repository.update(make_feed(pilots=[make_pilot(callsign="ABC123", cid=9000001)]))
 
-    assert await repository.has_callsign("ABC123") is True
+    assert await repository.has_pilot("ABC123") is True
     assert await repository.has_controller("EDDF_APP") is False
