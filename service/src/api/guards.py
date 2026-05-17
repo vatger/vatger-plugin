@@ -45,6 +45,19 @@ def get_plugin_token(
 
 
 @inject
+def get_user_from_token(
+    token: Annotated[PluginToken, Depends(get_plugin_token)],
+    user_repository: Annotated[
+        UserRepositoryInterface,
+        Depends(Provide(DependencyContainer.mongo_container.user_repository)),
+    ],
+):
+    user = user_repository.get_user(token.user)
+
+    return user
+
+
+@inject
 def get_user(
     user_repository: Annotated[
         UserRepositoryInterface,
