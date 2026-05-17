@@ -29,6 +29,7 @@ classDiagram
     }
 
     class UserRepositoryInterface {
+        get_user(id: uuid.UUID) User
         get_user_by_cid(cid: int) User
         add_user(user: User)
         update_user(user: User)

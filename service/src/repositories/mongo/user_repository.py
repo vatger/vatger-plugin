@@ -38,6 +38,12 @@ class MongoUserRepository(UserRepositoryInterface):
             "access": user.access,
         }
 
+    def get_user(self, id: uuid.UUID) -> User:
+        doc = self.collection.find_one({"id": str(id)})
+        if not doc:
+            return None
+        return self._doc_to_user(doc)
+
     def get_user_by_cid(self, cid: int) -> User | None:
         doc = self.collection.find_one({"cid": cid})
         if not doc:

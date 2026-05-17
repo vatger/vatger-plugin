@@ -33,6 +33,29 @@ def test_add_and_get_user(repo):
 
     repo.add_user(user)
 
+    fetched = repo.get_user(user.id)
+
+    assert fetched is not None
+    assert fetched.cid == user.cid
+    assert fetched.name == user.name
+    assert fetched.rating == user.rating
+    assert fetched.admin == user.admin
+    assert fetched.access == user.access
+    assert fetched.id == user.id
+
+
+def test_add_and_get_user_by_cid(repo):
+    user = User(
+        id=uuid.uuid4(),
+        cid=1,
+        name="Alice",
+        rating="A",
+        admin=True,
+        access=True,
+    )
+
+    repo.add_user(user)
+
     fetched = repo.get_user_by_cid(1)
 
     assert fetched is not None
@@ -45,6 +68,11 @@ def test_add_and_get_user(repo):
 
 
 def test_get_user_not_found(repo):
+    result = repo.get_user(uuid.uuid4())
+    assert result is None
+
+
+def test_get_user_by_id_not_found(repo):
     result = repo.get_user_by_cid(999)
     assert result is None
 
