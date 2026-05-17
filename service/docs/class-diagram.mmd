@@ -60,6 +60,17 @@ classDiagram
         delete(id: uuid.UUID)
     }
 
+    %% SilentRequest:
+
+    class SilentRequestRepositoryInterface {
+        create_request(request: SilentRequestModel) SilentRequestModel
+        get_request_by_callsign(callsign: str) SilentRequestModel | None
+        get_request_by_user_id(id: uuid.UUID) SilentRequestModel | None
+        get_requests_by_icao(icao: str) list[SilentRequestModel] | None
+        get_all_requests() list[SilentRequestModel] | None
+        delete_request_by_callsign(callsign: str)
+    }
+
     %% Datafeed:
 
     class DatafeedRepositoryInterface {
