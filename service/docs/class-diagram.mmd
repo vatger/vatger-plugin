@@ -8,6 +8,33 @@ classDiagram
     %% ..|>	Realization
     %% ..	Link (Dashed)
 
+    %% Auth:
+
+    class AuthController {
+    }
+
+    AuthController ..> AuthService
+
+    class AuthService {
+        authenticate(code: str)
+        get_vatsim_connect_url(state: str | None = None)
+    }
+
+    AuthService ..> VatsimAuthService
+    AuthService ..> UserRepositoryInterface
+
+    class VatsimAuthService {
+        exchange_code(code: str) AuthResponse
+        get_user(access_token: str) UserResponse
+    }
+
+    class UserRepositoryInterface {
+        get_user_by_cid(cid: int) User
+        add_user(user: User)
+        update_user(user: User)
+    }
+
+
     %% Datafeed:
 
     class DatafeedRepositoryInterface {
