@@ -1,0 +1,21 @@
+classDiagram
+    %% <|--	Inheritance
+    %% *--	Composition
+    %% o--	Aggregation
+    %% -->	Association
+    %% --	Link (Solid)
+    %% ..>	Dependency
+    %% ..|>	Realization
+    %% ..	Link (Dashed)
+
+    %% Datafeed:
+
+    class DatafeedRepositoryInterface {
+        update()
+        has_pilot()
+        get_pilot_by_callsign()
+        get_pilot_by_cid()
+        has_controller()
+        get_controller_by_callsign()
+        get_controller_by_cid()
+    }
