@@ -19,6 +19,7 @@ class PilotModel(BaseModel):
         route: str
         revision_id: int
 
+    cid: int
     callsign: str
     latitude: float
     longitude: float
@@ -41,7 +42,7 @@ class ControllerModel(BaseModel):
     rating: int
     server: str
     visual_range: int
-    text_atis: list[str] | None
+    text_atis: list[str] | None = None
     logon_time: datetime
     last_updated: datetime
 
