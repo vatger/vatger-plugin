@@ -47,6 +47,7 @@ classDiagram
         exchange_polling_secret_for_token(token_id: str, secret: str) str | None
         get_tokens(scope: Literal["own", "all"], user: User)
         revoke_token(token_id: str, user: User)
+        get_active_token_from_bearer(self, bearer_token: str) PluginToken
     }
 
     PluginTokenServiceInterface ..> PluginTokenRepositoryInterface 
