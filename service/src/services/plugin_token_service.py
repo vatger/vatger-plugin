@@ -3,6 +3,7 @@ import uuid
 from typing import Literal
 
 from core.security import generate_token
+from interfaces.repositories.plugin_token_repository_interface import PluginTokenRepositoryInterface
 from interfaces.services.plugin_token_service_interface import PluginTokenServiceInterface
 from models.plugin_token import PluginToken
 from models.user import User
@@ -24,7 +25,7 @@ class PermissionDeniedException(Exception):
 
 
 class PluginTokenService(PluginTokenServiceInterface):
-    def __init__(self, repository):
+    def __init__(self, repository: PluginTokenRepositoryInterface):
         self.repo = repository
 
     def _parse_token_id(self, token_id: str) -> uuid.UUID:
