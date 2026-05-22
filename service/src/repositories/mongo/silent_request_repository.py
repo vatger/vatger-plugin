@@ -76,3 +76,7 @@ class MongoSilentRequestRepository(SilentRequestRepositoryInterface):
     def delete_request_by_callsign(self, callsign: str) -> bool:
         result = self.collection.delete_one({"callsign": callsign})
         return result.deleted_count == 1
+
+    def delete_request_by_user(self, user_id: uuid.UUID) -> bool:
+        result = self.collection.delete_one({"user_id": str(user_id)})
+        return result.deleted_count == 1

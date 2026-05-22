@@ -155,6 +155,15 @@ def test_get_all_requests_empty(repo):
     assert results is None or results == []
 
 
+def test_delete_request_by_user(repo, sample_request):
+    repo.create_request(sample_request)
+
+    success = repo.delete_request_by_user(sample_request.user_id)
+    assert success is True
+
+    assert repo.get_request_by_callsign(sample_request.callsign) is None
+
+
 def test_delete_request_by_callsign(repo, sample_request):
     repo.create_request(sample_request)
 

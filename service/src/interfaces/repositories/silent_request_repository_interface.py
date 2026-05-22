@@ -25,3 +25,6 @@ class SilentRequestRepositoryInterface(ABC):
 
     @abstractmethod
     def delete_request_by_callsign(self, callsign: str) -> bool: ...
+
+    @abstractmethod
+    def delete_request_by_user(self, user_id: uuid.UUID) -> bool: ...

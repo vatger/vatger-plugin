@@ -38,3 +38,10 @@ class MockSilentRequestRepository(SilentRequestRepositoryInterface):
                 del self._requests[user_id]
                 return True
         return False
+
+    def delete_request_by_user(self, user_id: uuid.UUID) -> bool:
+        for uid, request in self._requests.items():
+            if request.user_id == user_id:
+                del self._requests[uid]
+                return True
+        return False
