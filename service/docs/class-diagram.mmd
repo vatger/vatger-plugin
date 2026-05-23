@@ -64,6 +64,16 @@ classDiagram
 
     %% SilentRequest:
 
+    class SilentRequestServiceInterface {
+        get_requests_by_icao(icao: str) list[SilentRequestModel]
+        get_all_requests() list[SilentRequestModel]
+        create_requests(user: User)
+        delete_request(actor: User, target_callsign: str | None = None)
+    }
+
+    SilentRequestServiceInterface ..> SilentRequestRepositoryInterface
+    SilentRequestServiceInterface ..> DatafeedRepositoryInterface
+
     class SilentRequestRepositoryInterface {
         create_request(request: SilentRequestModel) SilentRequestModel
         get_request_by_callsign(callsign: str) SilentRequestModel | None
