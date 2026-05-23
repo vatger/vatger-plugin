@@ -28,3 +28,9 @@ class MockDatafeedRepository(DatafeedRepositoryInterface):
 
     async def get_controller_by_cid(self, cid: int) -> ControllerModel | None:
         return next((c for c in self._controllers.values() if c.cid == cid), None)
+
+    def add_pilot(self, pilot: PilotModel):
+        self._pilots[pilot.callsign] = pilot
+
+    def add_controller(self, controller: ControllerModel):
+        self._controllers[controller.callsign] = controller
