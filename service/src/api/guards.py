@@ -54,6 +54,9 @@ def get_user_from_token(
 ):
     user = user_repository.get_user(token.user)
 
+    if not user.access:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+
     return user
 
 
