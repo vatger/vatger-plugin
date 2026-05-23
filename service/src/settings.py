@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     COOKIE_NAME_ACCESS: str = "vatger_plugin_access"
     COOKIE_NAME_REFRESH: str = "vatger_plugin_refresh"
 
+    SILENT_REQUEST_ALLOWED_AIRPORTS: list[str] | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
