@@ -28,6 +28,7 @@ def sample_request():
         callsign="DLH123",
         user_id=uuid.uuid4(),
         departure_icao="EDDF",
+        type="TAXI",
         requested_at=datetime.now(UTC),
     )
 
@@ -74,6 +75,7 @@ def test_create_duplicate_callsign_raises(repo, sample_request):
         callsign=sample_request.callsign,
         user_id=uuid.uuid4(),
         departure_icao="EDDF",
+        type="TAXI",
         requested_at=datetime.now(UTC),
     )
 
@@ -88,6 +90,7 @@ def test_create_duplicate_user_id_raises(repo, sample_request):
         callsign="EWG123",
         user_id=sample_request.user_id,
         departure_icao="EDDF",
+        type="TAXI",
         requested_at=datetime.now(UTC),
     )
 
@@ -100,17 +103,29 @@ def test_get_requests_by_icao(repo):
 
     repo.create_request(
         SilentRequestModel(
-            callsign="DLH1", user_id=user1, departure_icao="EDDF", requested_at=datetime.now(UTC)
+            callsign="DLH1",
+            user_id=user1,
+            departure_icao="EDDF",
+            type="TAXI",
+            requested_at=datetime.now(UTC),
         )
     )
     repo.create_request(
         SilentRequestModel(
-            callsign="DLH2", user_id=user2, departure_icao="EDDF", requested_at=datetime.now(UTC)
+            callsign="DLH2",
+            user_id=user2,
+            departure_icao="EDDF",
+            type="TAXI",
+            requested_at=datetime.now(UTC),
         )
     )
     repo.create_request(
         SilentRequestModel(
-            callsign="DLH3", user_id=user3, departure_icao="EDDM", requested_at=datetime.now(UTC)
+            callsign="DLH3",
+            user_id=user3,
+            departure_icao="EDDM",
+            type="PUSHBACK",
+            requested_at=datetime.now(UTC),
         )
     )
 
@@ -133,12 +148,20 @@ def test_get_all_requests(repo):
 
     r1 = repo.create_request(
         SilentRequestModel(
-            callsign="DLH1", user_id=user1, departure_icao="EDDF", requested_at=datetime.now(UTC)
+            callsign="DLH1",
+            user_id=user1,
+            departure_icao="EDDF",
+            type="TAXI",
+            requested_at=datetime.now(UTC),
         )
     )
     r2 = repo.create_request(
         SilentRequestModel(
-            callsign="DLH3", user_id=user2, departure_icao="EDDF", requested_at=datetime.now(UTC)
+            callsign="DLH3",
+            user_id=user2,
+            departure_icao="EDDF",
+            type="TAXI",
+            requested_at=datetime.now(UTC),
         )
     )
 
@@ -185,6 +208,7 @@ def test_uuid_serialization(repo):
         callsign="DLH123",
         user_id=user_id,
         departure_icao="EDDF",
+        type="TAXI",
         requested_at=datetime.now(UTC),
     )
 
@@ -203,6 +227,7 @@ def test_datetime_serialization(repo):
         callsign="DLH123",
         user_id=uuid.uuid4(),
         departure_icao="EDDF",
+        type="TAXI",
         requested_at=requested_at,
     )
 

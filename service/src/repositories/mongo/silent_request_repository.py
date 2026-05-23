@@ -23,6 +23,7 @@ class MongoSilentRequestRepository(SilentRequestRepositoryInterface):
             callsign=doc["callsign"],
             user_id=uuid.UUID(doc["user_id"]),
             departure_icao=doc["departure_icao"],
+            type=doc["type"],
             requested_at=doc["requested_at"].replace(tzinfo=UTC),
         )
 
@@ -31,6 +32,7 @@ class MongoSilentRequestRepository(SilentRequestRepositoryInterface):
             "callsign": request.callsign,
             "user_id": str(request.user_id),
             "departure_icao": request.departure_icao,
+            "type": request.type,
             "requested_at": request.requested_at,
         }
 
