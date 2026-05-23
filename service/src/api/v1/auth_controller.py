@@ -5,11 +5,11 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from fastapi.responses import RedirectResponse
 from jose import JWTError
 
+from api.guards import get_user
 from api.models.user_dto import UserInfoDTO
 from auth.auth_service import AuthService
 from containers.dependencies import DependencyContainer
 from core.security import create_access_token, create_refresh_token, decode_token
-from interfaces.repositories.user_repository_interface import UserRepositoryInterface
 from models.user import User
 from settings import settings
 
@@ -60,60 +60,6 @@ def vatsim_connect_callback(
     _set_auth_cookies(response, token.access, token.refresh)
 
     return response
-
-
-@inject
-def get_user(
-    user_repository: Annotated[
-        UserRepositoryInterface,
-        Depends(Provide(DependencyContainer.mongo_container.user_repository)),
-    ],
-    access_token: Annotated[str | None, Cookie(alias=settings.COOKIE_NAME_ACCESS)] = None,
-) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    if access_token is None:
-        raise credentials_exception
-
-    try:
-        payload = decode_token(access_token)
-        cid: str | None = payload.get("sub")
-        if cid is None:
-            raise credentials_exception
-
-        user = user_repository.get_user_by_cid(cid)
-
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="User not found in database",
-            )
-
-        if not user.access:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-
-    except JWTError as exc:
-        raise credentials_exception from exc
-
-    return user
-
-
-@inject
-def get_optional_user(
-    user_repository: Annotated[
-        UserRepositoryInterface,
-        Depends(Provide(DependencyContainer.mongo_container.user_repository)),
-    ],
-    access_token: Annotated[str | None, Cookie(alias=settings.COOKIE_NAME_ACCESS)] = None,
-) -> User | None:
-    try:
-        return get_user(user_repository=user_repository, access_token=access_token)
-    except HTTPException:
-        return None
 
 
 @router.get(

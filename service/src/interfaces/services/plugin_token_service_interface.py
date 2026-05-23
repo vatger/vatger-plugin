@@ -20,3 +20,6 @@ class PluginTokenServiceInterface(ABC):
 
     @abstractmethod
     def revoke_token(token_id: str, user: User): ...
+
+    @abstractmethod
+    def get_active_token_from_bearer(self, bearer_token: str) -> PluginToken: ...

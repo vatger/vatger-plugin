@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class User:
-    id: uuid.uuid4
+    id: uuid.UUID
     cid: str
     name: str
     rating: str

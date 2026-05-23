@@ -1,9 +1,10 @@
 from typing import Annotated, Literal
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 
+from api.guards import get_optional_user, get_plugin_token, get_user
 from api.models.plugin_token_dto import (
     AuthorizePluginDTO,
     AuthorizePluginPollDTO,
@@ -12,14 +13,13 @@ from api.models.plugin_token_dto import (
     PluginTokenStartDTO,
     PollPluginTokenDTO,
 )
-from api.v1.auth_controller import get_optional_user, get_user
 from containers.dependencies import DependencyContainer
+from interfaces.services.plugin_token_service_interface import PluginTokenServiceInterface
 from models.plugin_token import PluginToken
 from models.user import User
 from services.plugin_token_service import (
     InvalidTokenException,
     PermissionDeniedException,
-    PluginTokenService,
     TokenAlreadyAuthorizedException,
     UnauthorizedException,
 )
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/plugin-token", tags=["Plugin Token"])
 @inject
 def start_plugin_token_flow(
     pt_service: Annotated[
-        PluginTokenService,
+        PluginTokenServiceInterface,
         Depends(Provide(DependencyContainer.plugin_token_service)),
     ],
 ) -> PluginTokenStartDTO:
@@ -51,7 +51,7 @@ def start_authorize_plugin_token(
     token_id: str,
     user: Annotated[User, Depends(get_optional_user)],
     pt_service: Annotated[
-        PluginTokenService,
+        PluginTokenServiceInterface,
         Depends(Provide(DependencyContainer.plugin_token_service)),
     ],
 ):
@@ -69,7 +69,7 @@ def authorize_plugin_token(
     body: AuthorizePluginDTO,
     user: Annotated[User, Depends(get_user)],
     pt_service: Annotated[
-        PluginTokenService,
+        PluginTokenServiceInterface,
         Depends(Provide(DependencyContainer.plugin_token_service)),
     ],
 ):
@@ -91,7 +91,7 @@ def plugin_token_poll(
     token_id: str,
     body: AuthorizePluginPollDTO,
     pt_service: Annotated[
-        PluginTokenService,
+        PluginTokenServiceInterface,
         Depends(Provide(DependencyContainer.plugin_token_service)),
     ],
 ) -> PollPluginTokenDTO:
@@ -117,7 +117,7 @@ def plugin_token_poll(
 def get_all_tokens(
     user: Annotated[User, Depends(get_user)],
     pt_service: Annotated[
-        PluginTokenService,
+        PluginTokenServiceInterface,
         Depends(Provide(DependencyContainer.plugin_token_service)),
     ],
     scope: Literal["own", "all"] = "own",
@@ -139,39 +139,11 @@ def revoke_token(
     token_id: str,
     user: Annotated[User, Depends(get_user)],
     pt_service: Annotated[
-        PluginTokenService,
+        PluginTokenServiceInterface,
         Depends(Provide(DependencyContainer.plugin_token_service)),
     ],
 ):
     pt_service.revoke_token(token_id, user)
-
-
-@inject
-def get_plugin_token(
-    pt_service: Annotated[
-        PluginTokenService,
-        Depends(Provide(DependencyContainer.plugin_token_service)),
-    ],
-    authorization: Annotated[str | None, Header(alias="Authorization")] = None,
-) -> PluginToken:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Unauthorized",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    if authorization is None:
-        raise credentials_exception
-
-    scheme, _, bearer_token = authorization.partition(" ")
-
-    if scheme.lower() != "bearer" or not bearer_token:
-        raise credentials_exception
-
-    try:
-        return pt_service.get_active_token_from_bearer(bearer_token)
-    except UnauthorizedException as exc:
-        raise credentials_exception from exc
 
 
 @router.get("/me")
