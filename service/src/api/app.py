@@ -4,6 +4,7 @@ from api.router import main_router
 from api.v1 import (
     auth_controller,
     datafeed_controller,
+    gdpr_controller,
     plugin_token_controller,
     silent_request_controller,
 )
@@ -19,5 +20,6 @@ container.wire(
         plugin_token_controller,
         silent_request_controller,
         datafeed_controller,
+        gdpr_controller,
     ]
 )
