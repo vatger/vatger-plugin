@@ -63,7 +63,7 @@ def delete_user(
     user_repo.delete_user(user.id)
 
 
-@router.get("/{cid}")
+@router.get("/gdpr/{cid}")
 @inject
 def gdpr_get_user_data(
     bearer_token: Annotated[HTTPAuthorizationCredentials, Depends(token_scheme)],
