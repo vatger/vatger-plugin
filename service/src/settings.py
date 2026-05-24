@@ -24,6 +24,8 @@ class Settings(BaseSettings):
 
     SILENT_REQUEST_ALLOWED_AIRPORTS: list[str] | None = None
 
+    GDPR_API_TOKEN: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
