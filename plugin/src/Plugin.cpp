@@ -51,7 +51,8 @@ bool VatgerPlugin::OnCompileCommand(const char *sCommandLine) {
     }
 
     std::string preword = parts[1];
-    std::transform(preword.begin(), preword.end(), preword.begin(), ::tolower);
+    std::transform(preword.begin(), preword.end(), preword.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     auto it = m_compileCommands.find(preword);
     if (it != m_compileCommands.end()) {
@@ -71,7 +72,8 @@ bool VatgerPlugin::OnCompileCommand(const char *sCommandLine) {
 
 void VatgerPlugin::RegisterModuleOnCompileCommand(const std::string &preword, IModule *module) {
     std::string normalizedPreword = preword;
-    std::transform(normalizedPreword.begin(), normalizedPreword.end(), normalizedPreword.begin(), ::tolower);
+    std::transform(normalizedPreword.begin(), normalizedPreword.end(), normalizedPreword.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     auto [it, inserted] = m_compileCommands.emplace(normalizedPreword, module);
     if (!inserted) {
