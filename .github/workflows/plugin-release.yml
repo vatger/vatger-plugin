@@ -34,7 +34,7 @@ jobs:
         id: cmake-version
         uses: DarwinInnovation/cmake-project-version-action@v1.0
         with:
-          path: "build/"
+          path: "plugin/"
 
       - name: Create GitHub Release
         id: create_release
