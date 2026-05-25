@@ -93,3 +93,23 @@ void AuthService::pollToken(std::stop_token stopToken, PluginTokenStartDTO dto) 
         break;
     }
 }
+
+void AuthService::init(vatger::IPlugin* plugin) {
+    m_plugin = plugin;
+    m_plugin->RegisterModuleOnCompileCommand("auth", this);
+};
+
+void AuthService::handleOnCompileCommand(const std::string& command) {
+    // FIXME: use BackgroundExecuter to avoid small EuroScope freezes
+    if (command == "status") {
+        const auto isAuthenticated = this->isAuthenticated();
+        if (isAuthenticated) {
+            m_plugin->DisplayMessage("Plugin is authenticated", "Auth");
+        } else {
+            m_plugin->DisplayMessage("Plugin is not authenticated", "Auth");
+        }
+    } else if (command == "start") {
+        m_plugin->DisplayMessage("Starting Auth Flow", "Auth");
+        this->startAuthFlow();
+    }
+};
