@@ -5,8 +5,7 @@
 #include "tests/mocks/MockLogger.h"
 
 TEST(CurlRestClientTest, TestGet) {
-    auto logger = std::make_shared<mocks::MockLogger>();
-    api::CurlRestClient client(logger);
+    api::CurlRestClient client;
 
     auto response =
         client.get("https://raw.githubusercontent.com/VATGER-Nav/loa/refs/heads/production/dist/agreements.json");
