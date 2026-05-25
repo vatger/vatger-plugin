@@ -1,5 +1,7 @@
 # Unit tests
 ADD_EXECUTABLE(unit_tests
+    unit/api/test_CurlRestClient.cpp
+    unit/core/test_BackgroundExecuter.cpp
     test_main.cpp
 )
 TARGET_LINK_LIBRARIES(unit_tests PRIVATE

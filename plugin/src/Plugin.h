@@ -9,9 +9,11 @@
 
 #include "auth/IAuthService.h"
 #include "log/ILogger.h"
+#include "module/IModule.h"
+#include "module/IPlugin.h"
 
 namespace vatger {
-class VatgerPlugin : public EuroScopePlugIn::CPlugIn {
+class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
    private:
     std::shared_ptr<logging::ILogger> m_logger;
 
@@ -25,5 +27,8 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn {
 
    private:
     std::unique_ptr<interfaces::IAuthService> m_authService;
+
+    void RegisterModuleOnCompileCommand(const std::string &preword, IModule *module) override;
+    std::unordered_map<std::string, IModule *> m_compileCommands;
 };
 }  // namespace vatger

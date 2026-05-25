@@ -1,8 +1,0 @@
-[requires]
-gtest/1.15.0
-sqlite3/3.39.1
-libcurl/8.12.1
-
-[generators]
-CMakeDeps
-CMakeToolchain

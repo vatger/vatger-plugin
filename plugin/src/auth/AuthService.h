@@ -10,11 +10,13 @@
 #include "api/IRestClient.h"
 #include "auth/AuthTypes.h"
 #include "auth/IAuthService.h"
+#include "module/IModule.h"
+#include "module/IPlugin.h"
 #include "system/ISystem.h"
 
 namespace auth {
 
-class AuthService : public interfaces::IAuthService {
+class AuthService : public interfaces::IAuthService, public vatger::IModule {
    public:
     AuthService(std::unique_ptr<interfaces::IRestClient> restClient, std::shared_ptr<interfaces::ISystem> system,
                 std::string baseUrl = "http://localhost:8000",
@@ -24,6 +26,9 @@ class AuthService : public interfaces::IAuthService {
     bool isAuthenticated() override;
     std::optional<std::string> getToken() override;
     AuthFlowResult startAuthFlow() override;
+
+    void init(vatger::IPlugin* plugin) override;
+    void handleOnCompileCommand(const std::string& command) override;
 
    private:
     void validateToken();
@@ -40,6 +45,8 @@ class AuthService : public interfaces::IAuthService {
     std::chrono::milliseconds m_pollingInterval;
     std::condition_variable_any m_cv;
     std::mutex m_cvMutex;
+
+    vatger::IPlugin* m_plugin = nullptr;
 };
 
 }  // namespace auth
