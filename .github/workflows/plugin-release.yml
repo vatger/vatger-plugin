@@ -32,10 +32,10 @@ jobs:
           Write-Host "Detected version: $version"
 
       - name: Configure CMake
-        run: cmake -S ${{ env.PROJECT_DIR }} -B build -A Win32
+        run: cmake -S ${{ env.PROJECT_DIR }} -B ${{ env.PROJECT_DIR }}/build -A Win32
 
       - name: Build
-        run: cmake --build build --parallel --config Release
+        run: cmake --build ${{ env.PROJECT_DIR }}/build --parallel --config Release
 
       - name: Create GitHub Release
         id: create_release
