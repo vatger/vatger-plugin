@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   PROJECT_DIR: "plugin"
@@ -34,7 +34,7 @@ jobs:
         id: cmake-version
         uses: DarwinInnovation/cmake-project-version-action@v1.0
         with:
-          path: ${{ env.PROJECT_DIR }}
+          path: ${{ env.PROJECT_DIR }}/
 
       - name: Create GitHub Release
         id: create_release
