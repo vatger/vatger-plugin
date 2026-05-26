@@ -98,3 +98,9 @@ def auth_refresh(
         )
 
     _set_auth_cookies(response, create_access_token(cid), create_refresh_token(cid))
+
+
+@router.post("/auth/logout")
+def logout(response: Response):
+    response.delete_cookie(settings.COOKIE_NAME_ACCESS, path="/")
+    response.delete_cookie(settings.COOKIE_NAME_REFRESH, path="/")
