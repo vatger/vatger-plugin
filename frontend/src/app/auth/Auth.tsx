@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useResolvedTheme } from "@/components/theme-provider"
+import { Dashboard } from "@/views/Dashboard"
 
 const ERROR_MESSAGES: Record<AuthErrorCode, string> = {
   access_denied: "Your account does not have access to this system.",
@@ -72,6 +73,8 @@ export const Auth = () => {
       setLoading(false)
     }
   }
+
+  if (user) return <Dashboard />
 
   return (
     <Login
