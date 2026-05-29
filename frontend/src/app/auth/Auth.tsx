@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useTheme } from "@/components/theme-provider"
+import { useResolvedTheme } from "@/components/theme-provider"
 
 const ERROR_MESSAGES: Record<AuthErrorCode, string> = {
   access_denied: "Your account does not have access to this system.",
@@ -109,7 +109,7 @@ export const AuthorizePluginToken = () => {
         <img
           className="p-12 pb-4"
           src={
-            useTheme().theme === "dark"
+            useResolvedTheme() === "dark"
               ? "/vatger_logo_light.svg"
               : "/vatger_logo_dark.svg"
           }

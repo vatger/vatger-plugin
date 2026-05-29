@@ -58,6 +58,12 @@ function disableTransitionsTemporarily() {
   }
 }
 
+export const useResolvedTheme = (): ResolvedTheme => {
+  const { theme } = useTheme()
+  if (theme === "system") return getSystemTheme()
+  return theme
+}
+
 function isEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false

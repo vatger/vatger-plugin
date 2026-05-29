@@ -1,5 +1,5 @@
 import { selectUser, useAppSelector } from "@/app/auth"
-import { useTheme } from "@/components/theme-provider"
+import { useResolvedTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
@@ -13,7 +13,7 @@ export const Login = ({
   error?: string
 }) => {
   const user = useAppSelector(selectUser)
-  const { theme } = useTheme()
+  const theme = useResolvedTheme()
 
   if (user)
     return (
