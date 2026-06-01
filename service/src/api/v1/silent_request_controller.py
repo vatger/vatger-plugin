@@ -48,7 +48,7 @@ async def create_silent_request(
         ) from None
 
 
-@router.get("")
+@router.get("", summary="Get the user's SilentRequest")
 @inject
 def get_user_silent_request(
     user: Annotated[User, Depends(get_user)],
@@ -65,7 +65,7 @@ def get_user_silent_request(
     return SilentRequestOutDTO(**request.model_dump())
 
 
-@router.get("/{icao}")
+@router.get("/{icao}", summary="Get all SilentRequest by ICAO")
 @inject
 def get_silent_requests(
     icao: str,
@@ -80,7 +80,7 @@ def get_silent_requests(
     return [SilentRequestOutDTO(**element) for element in requests.model_dump()]
 
 
-@router.delete("/{callsign}")
+@router.delete("/{callsign}", summary="Delete a SilentRequest by callsign")
 @inject
 def delete_request(
     user: Annotated[User, Depends(get_user)],
@@ -93,7 +93,7 @@ def delete_request(
     sr_service.delete_request(user, callsign)
 
 
-@router.delete("/plugin/{callsign}")
+@router.delete("/plugin/{callsign}", summary="Delete a SilentRequest by callsign")
 @inject
 def plugin_delete_request(
     user: Annotated[User, Depends(get_user_from_token)],
