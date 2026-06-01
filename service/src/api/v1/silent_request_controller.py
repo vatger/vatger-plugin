@@ -7,10 +7,13 @@ from api.guards import get_user, get_user_from_token
 from api.models.silent_request_dto import SilentRequestCreateDTO, SilentRequestOutDTO
 from containers.dependencies import DependencyContainer
 from interfaces.services.silent_request_service_interface import (
+    ControllerOfflineException,
     ExistingRequestException,
     InvalidAirportExpection,
+    NoExistingRequestException,
     SilentRequestServiceInterface,
     UserHasNoFlightplanException,
+    UserMustBeControllerException,
     UserOfflineException,
 )
 from models.user import User
@@ -82,15 +85,29 @@ def get_silent_requests(
 
 @router.delete("/{callsign}", summary="Delete a SilentRequest by callsign")
 @inject
-def delete_request(
+async def delete_request(
     user: Annotated[User, Depends(get_user)],
     sr_service: Annotated[
         SilentRequestServiceInterface,
         Depends(Provide[DependencyContainer.silent_request_service]),
     ],
     callsign: str | None = None,
-):
-    sr_service.delete_request(user, callsign)
+) -> bool:
+    try:
+        return await sr_service.delete_request(user, callsign)
+    except NoExistingRequestException:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete request, no existing request found",
+        ) from None
+    except ControllerOfflineException:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User must be online as controller"
+        ) from None
+    except UserMustBeControllerException:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User must be active controller"
+        ) from None
 
 
 @router.delete("/plugin/{callsign}", summary="Delete a SilentRequest by callsign")
