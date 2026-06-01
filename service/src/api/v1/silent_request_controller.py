@@ -48,6 +48,23 @@ async def create_silent_request(
         ) from None
 
 
+@router.get("")
+@inject
+def get_user_silent_request(
+    user: Annotated[User, Depends(get_user_from_token)],
+    sr_service: Annotated[
+        SilentRequestServiceInterface,
+        Depends(Provide[DependencyContainer.silent_request_service]),
+    ],
+):
+    request = sr_service.get_request_by_user(user.id)
+
+    if not request:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No request")
+
+    return SilentRequestOutDTO(**request.model_dump())
+
+
 @router.get("/{icao}")
 @inject
 def get_silent_requests(
