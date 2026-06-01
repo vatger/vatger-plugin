@@ -37,7 +37,7 @@ class SilentRequestService(SilentRequestServiceInterface):
 
     async def create_request(self, user: User, type: Literal["TAXI", "PUSHBACK"]):
         # check if user is online as pilot
-        pilot = await self.datafeed_repo.get_pilot_by_cid(user.cid)
+        pilot = await self.datafeed_repo.get_pilot_by_cid(int(user.cid))
 
         if not pilot:
             raise UserOfflineException
@@ -86,7 +86,7 @@ class SilentRequestService(SilentRequestServiceInterface):
         if request.user_id == actor.id:
             return self.repo.delete_request_by_user(request.user_id)
         else:
-            controller = await self.datafeed_repo.get_controller_by_cid(actor.cid)
+            controller = await self.datafeed_repo.get_controller_by_cid(int(actor.cid))
 
             if not controller:
                 raise UserOfflineException
