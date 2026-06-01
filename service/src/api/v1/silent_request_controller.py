@@ -83,6 +83,29 @@ def get_silent_requests(
     return [SilentRequestOutDTO(**element) for element in requests.model_dump()]
 
 
+@router.delete("", summary="Delete the user's SilentRequest")
+@inject
+async def delete_user_silent_request(
+    user: Annotated[User, Depends(get_user)],
+    sr_service: Annotated[
+        SilentRequestServiceInterface,
+        Depends(Provide[DependencyContainer.silent_request_service]),
+    ],
+):
+    try:
+        return await sr_service.delete_request(user)
+    except NoExistingRequestException:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete request, no existing request found",
+        ) from None
+    except (ControllerOfflineException, UserMustBeControllerException):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Couldn't delete request",
+        ) from None
+
+
 @router.delete("/{callsign}", summary="Delete a SilentRequest by callsign")
 @inject
 async def delete_request(
