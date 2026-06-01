@@ -7,6 +7,7 @@ from interfaces.repositories.silent_request_repository_interface import (
     SilentRequestRepositoryInterface,
 )
 from interfaces.services.silent_request_service_interface import (
+    ControllerOfflineException,
     ExistingRequestException,
     InvalidAirportExpection,
     NoExistingRequestException,
@@ -92,9 +93,15 @@ class SilentRequestService(SilentRequestServiceInterface):
         else:
             controller = await self.datafeed_repo.get_controller_by_cid(int(actor.cid))
 
-            if not controller:
-                raise UserOfflineException
+            # admin may always delete
+            if actor.admin:
+                return self.repo.delete_request_by_user(request.user_id)
 
+            # if the actor is not online as a controller and not an admin
+            if not controller:
+                raise ControllerOfflineException
+
+            # deny observers
             if controller.isObserver():
                 raise UserMustBeControllerException
 

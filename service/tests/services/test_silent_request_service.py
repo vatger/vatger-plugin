@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 import pytest
 
 from interfaces.services.silent_request_service_interface import (
+    ControllerOfflineException,
     ExistingRequestException,
     InvalidAirportExpection,
     NoExistingRequestException,
@@ -392,7 +393,7 @@ async def test_delete_other_users_request_raises_when_actor_offline(
     silent_repo.create_request(request)
 
     # datafeed has no controller for actor.cid, therefor
-    with pytest.raises(UserOfflineException):
+    with pytest.raises(ControllerOfflineException):
         await service.delete_request(actor=actor, target_callsign="DLH123")
 
 
