@@ -238,6 +238,32 @@ async def test_invalid_airport(service, datafeed_repo, silent_repo):
         await service.create_request(user, type="TAXI")
 
 
+def test_get_requests_by_user_returns_matching_requests(service, silent_repo):
+    r1 = SilentRequestModel(
+        callsign="DLH1",
+        user_id=uuid.uuid4(),
+        departure_icao="EDDF",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    r2 = SilentRequestModel(
+        callsign="BAW1",
+        user_id=uuid.uuid4(),
+        departure_icao="EGLL",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    silent_repo.create_request(r1)
+    silent_repo.create_request(r2)
+
+    result = service.get_request_by_user(r1.user_id)
+
+    assert result.callsign == "DLH1"
+
+    result = service.get_request_by_user(r2.user_id)
+    assert result.callsign == "BAW1"
+
+
 def test_get_requests_by_icao_returns_matching_requests(service, silent_repo):
     r1 = SilentRequestModel(
         callsign="DLH1",

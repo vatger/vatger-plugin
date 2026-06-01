@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime
 from typing import Literal
 
@@ -34,6 +35,9 @@ class SilentRequestService(SilentRequestServiceInterface):
 
     def get_all_requests(self) -> list[SilentRequestModel]:
         return self.repo.get_all_requests() or []
+
+    def get_request_by_user(self, user_id: uuid.UUID) -> SilentRequestModel | None:
+        return self.repo.get_request_by_user_id(user_id)
 
     async def create_request(self, user: User, type: Literal["TAXI", "PUSHBACK"]):
         # check if user is online as pilot

@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC, abstractmethod
 
 from models.silent_request_model import SilentRequestModel
@@ -25,6 +26,9 @@ class InvalidAirportExpection(Exception): ...
 class SilentRequestServiceInterface(ABC):
     @abstractmethod
     def get_requests_by_icao(self, icao: str) -> list[SilentRequestModel]: ...
+
+    @abstractmethod
+    def get_request_by_user(self, user_id: uuid.UUID) -> SilentRequestModel | None: ...
 
     @abstractmethod
     def get_all_requests(self) -> list[SilentRequestModel]: ...
