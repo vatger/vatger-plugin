@@ -51,7 +51,7 @@ async def create_silent_request(
 @router.get("")
 @inject
 def get_user_silent_request(
-    user: Annotated[User, Depends(get_user_from_token)],
+    user: Annotated[User, Depends(get_user)],
     sr_service: Annotated[
         SilentRequestServiceInterface,
         Depends(Provide[DependencyContainer.silent_request_service]),
