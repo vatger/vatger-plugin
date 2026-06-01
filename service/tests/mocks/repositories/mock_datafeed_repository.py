@@ -3,9 +3,18 @@ from models.datafeed import ControllerModel, DatafeedModel, PilotModel
 
 
 class MockDatafeedRepository(DatafeedRepositoryInterface):
-    def __init__(self):
+    def __init__(
+        self,
+        initial_pilots: dict[str, PilotModel] | None = None,
+        initial_controllers: dict[str, ControllerModel] | None = None,
+    ):
         self._pilots: dict[str, PilotModel] = {}
         self._controllers: dict[str, ControllerModel] = {}
+        if initial_pilots:
+            self._pilots: dict[str, PilotModel] = initial_pilots
+
+        if initial_controllers:
+            self._controllers: dict[str, ControllerModel] = initial_controllers
 
     async def update(self, feed: DatafeedModel):
         self._pilots = {p.callsign: p for p in feed.pilots}
