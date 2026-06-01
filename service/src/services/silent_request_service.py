@@ -79,30 +79,24 @@ class SilentRequestService(SilentRequestServiceInterface):
     async def delete_request(self, actor: User, target_callsign: str | None = None):
         """If no target_callsign is provided, user requests the deletion of his own request"""
 
-        request = None
-        if target_callsign:
-            request = self.repo.get_request_by_callsign(target_callsign)
-        else:
-            request = self.repo.get_request_by_user_id(actor.id)
+        request = (
+            self.repo.get_request_by_callsign(target_callsign)
+            if target_callsign
+            else self.repo.get_request_by_user_id(actor.id)
+        )
 
         if not request:
             raise NoExistingRequestException
 
-        if request.user_id == actor.id:
-            return self.repo.delete_request_by_user(request.user_id)
-        else:
+        # users may always delete their own request
+        # otherwise actor must be active controller
+        if request.user_id != actor.id and not actor.admin:
             controller = await self.datafeed_repo.get_controller_by_cid(int(actor.cid))
 
-            # admin may always delete
-            if actor.admin:
-                return self.repo.delete_request_by_user(request.user_id)
-
-            # if the actor is not online as a controller and not an admin
             if not controller:
                 raise ControllerOfflineException
 
-            # deny observers
             if controller.isObserver():
                 raise UserMustBeControllerException
 
-            return self.repo.delete_request_by_user(request.user_id)
+        return self.repo.delete_request_by_user(request.user_id)
