@@ -68,21 +68,6 @@ def get_user_silent_request(
     return SilentRequestOutDTO(**request.model_dump())
 
 
-@router.get("/{icao}", summary="Get all SilentRequest by ICAO")
-@inject
-def get_silent_requests(
-    icao: str,
-    user: Annotated[User, Depends(get_user_from_token)],
-    sr_service: Annotated[
-        SilentRequestServiceInterface,
-        Depends(Provide[DependencyContainer.silent_request_service]),
-    ],
-):
-    requests = sr_service.get_requests_by_icao(icao)
-
-    return [SilentRequestOutDTO(**element) for element in requests.model_dump()]
-
-
 @router.delete("", summary="Delete the user's SilentRequest")
 @inject
 async def delete_user_silent_request(
@@ -131,6 +116,21 @@ async def delete_request(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="User must be active controller"
         ) from None
+
+
+@router.get("/plugin/{icao}", summary="Get all SilentRequest by ICAO")
+@inject
+def get_silent_requests(
+    icao: str,
+    user: Annotated[User, Depends(get_user_from_token)],
+    sr_service: Annotated[
+        SilentRequestServiceInterface,
+        Depends(Provide[DependencyContainer.silent_request_service]),
+    ],
+):
+    requests = sr_service.get_requests_by_icao(icao)
+
+    return [SilentRequestOutDTO(**element) for element in requests.model_dump()]
 
 
 @router.delete("/plugin/{callsign}", summary="Delete a SilentRequest by callsign")
