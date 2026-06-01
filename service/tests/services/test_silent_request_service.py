@@ -442,3 +442,53 @@ async def test_delete_other_users_request_succeeds_when_actor_is_controller(
     await service.delete_request(actor=actor, target_callsign="DLH123")
 
     assert silent_repo.get_request_by_user_id(owner.id) is None
+
+
+@pytest.mark.asyncio
+async def test_delete_other_users_request_succeeds_when_actor_is_admin(service, silent_repo):
+    owner = make_user(cid=1111111)
+
+    actor = make_user(cid=2222222)
+    actor.admin = True
+
+    request = SilentRequestModel(
+        callsign="DLH123",
+        user_id=owner.id,
+        departure_icao="EDDF",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    silent_repo.create_request(request)
+
+    await service.delete_request(
+        actor=actor,
+        target_callsign="DLH123",
+    )
+
+    assert silent_repo.get_request_by_user_id(owner.id) is None
+
+
+@pytest.mark.asyncio
+async def test_admin_can_delete_request_while_offline(service, silent_repo):
+    owner = make_user(cid=1111111)
+
+    admin = make_user(cid=2222222)
+    admin.admin = True
+
+    request = SilentRequestModel(
+        callsign="DLH123",
+        user_id=owner.id,
+        departure_icao="EDDF",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    silent_repo.create_request(request)
+
+    # admin is not added as a controller
+
+    await service.delete_request(
+        actor=admin,
+        target_callsign="DLH123",
+    )
+
+    assert silent_repo.get_request_by_user_id(owner.id) is None
