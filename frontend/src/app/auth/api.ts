@@ -37,19 +37,6 @@ export async function refreshTokens(): Promise<void> {
   if (!res.ok) throw new AuthError("refresh_failed")
 }
 
-export async function authorizeToken(
-  tokenId: string,
-  label: string
-): Promise<void> {
-  const res = await fetch(`/api/v1/plugin-token/authorize/${tokenId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ label }),
-  })
-
-  if (!res.ok) throw new Error(`Request failed: ${res.status}`)
-}
-
 export async function logout(): Promise<void> {
   await fetch(`${AUTH_BASE}/logout`, {
     method: "POST",

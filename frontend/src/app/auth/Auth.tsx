@@ -1,21 +1,13 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router"
+import { Navigate } from "react-router"
 import { Login } from "@/views/Login"
 import {
   AuthError,
   type AuthErrorCode,
-  authorizeToken,
   fetchCurrentUser,
 } from "./api"
 import { useAppDispatch, useAppSelector } from "./hooks"
 import { selectUser, setUser } from "./slice"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useResolvedTheme } from "@/components/theme-provider"
-import { Dashboard } from "@/views/Dashboard"
-
 const ERROR_MESSAGES: Record<AuthErrorCode, string> = {
   access_denied: "Your account does not have access to this system.",
   auth_failed: "Login failed. Please try again.",
@@ -74,7 +66,7 @@ export const Auth = () => {
     }
   }
 
-  if (user) return <Dashboard />
+  if (user) return <Navigate to="/" replace />
 
   return (
     <Login
@@ -85,77 +77,3 @@ export const Auth = () => {
   )
 }
 
-type State = "start" | "load" | "done" | "error"
-
-export const AuthorizePluginToken = () => {
-  const { id: tokenId } = useParams()
-  const [label, setLabel] = useState("")
-  const [state, setState] = useState<State>("start")
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!tokenId) return setState("error")
-
-    try {
-      setState("load")
-      await authorizeToken(tokenId, label)
-      setState("done")
-    } catch (err) {
-      console.error(err)
-      setState("error")
-    }
-  }
-
-  return (
-    <div className="flex size-full min-h-screen items-center justify-center text-center">
-      <Card>
-        <img
-          className="p-12 pb-4"
-          src={
-            useResolvedTheme() === "dark"
-              ? "/vatger_logo_light.svg"
-              : "/vatger_logo_dark.svg"
-          }
-        />
-        <p className="text-center">
-          A EuroScope vatger-plugin requested access in your name.
-        </p>
-        {state === "done" ? (
-          <p>The access was approved. This tab can be closed.</p>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="mx-12 flex flex-col items-center gap-3">
-              <div className="flex w-full flex-col gap-2">
-                <Label htmlFor="inputLabel">Label</Label>
-                <Input
-                  id="inputLabel"
-                  onChange={(e) => setLabel(e.target.value)}
-                  placeholder="My personal computer"
-                  value={label}
-                />
-              </div>
-
-              {state === "error" && (
-                <p className="text-center text-red-600">
-                  <strong>Error</strong>: Failed to approve the access.
-                </p>
-              )}
-
-              <p className="text-center text-sm text-gray-500">
-                Token: {tokenId}
-              </p>
-
-              <Button
-                className="px-8"
-                disabled={state === "load"}
-                type="submit"
-              >
-                Approve
-              </Button>
-            </div>
-          </form>
-        )}
-      </Card>
-    </div>
-  )
-}

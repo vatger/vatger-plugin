@@ -1,4 +1,4 @@
-import { useResolvedTheme } from "@/components/theme-provider"
+import { VatgerLogo } from "@/components/brand/VatgerLogo"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
@@ -11,19 +11,10 @@ export const Login = ({
   loading?: boolean
   error?: string
 }) => {
-  const theme = useResolvedTheme()
-
   return (
     <div className="flex size-full min-h-screen items-center justify-center text-center">
       <Card>
-        <img
-          className="p-12 pb-4"
-          src={
-            theme === "dark"
-              ? "/vatger_logo_light.svg"
-              : "/vatger_logo_dark.svg"
-          }
-        />
+        <VatgerLogo className="mx-auto p-12 pb-4 h-10" />
         {error && (
           <p className="mb-3 max-w-50 text-center text-sm font-semibold text-red-600">
             {error}

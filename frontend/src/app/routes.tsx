@@ -1,10 +1,19 @@
 import { createBrowserRouter, Navigate } from "react-router"
-import { Auth, RequireAuth, AuthorizePluginToken } from "./auth"
+import { Auth, RequireAuth } from "./auth"
+import { EfbSettingsProvider } from "./efb"
+import { AuthorizePlugin } from "@/views/AuthorizePlugin"
+import { Efb } from "@/views/Efb"
 
 const router = createBrowserRouter([
   {
-    path: "/*",
-    element: <Navigate to="/auth" replace />,
+    path: "/",
+    element: (
+      <RequireAuth>
+        <EfbSettingsProvider>
+          <Efb />
+        </EfbSettingsProvider>
+      </RequireAuth>
+    ),
   },
   {
     path: "/auth",
@@ -14,9 +23,17 @@ const router = createBrowserRouter([
     path: "/authorize-plugin/:id",
     element: (
       <RequireAuth>
-        <AuthorizePluginToken />
+        <AuthorizePlugin />
       </RequireAuth>
     ),
+  },
+  {
+    path: "/settings",
+    element: <Navigate to="/" replace />,
+  },
+  {
+    path: "/*",
+    element: <Navigate to="/auth" replace />,
   },
 ])
 
