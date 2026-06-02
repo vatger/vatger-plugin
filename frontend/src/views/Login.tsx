@@ -13,8 +13,8 @@ export const Login = ({
 }) => {
   return (
     <div className="flex size-full min-h-screen items-center justify-center text-center">
-      <Card>
-        <VatgerLogo className="mx-auto p-12 pb-4 h-10" />
+      <Card className="px-4">
+        <VatgerLogo className="m-10 mb-4 h-16" />
         {error && (
           <p className="mb-3 max-w-50 text-center text-sm font-semibold text-red-600">
             {error}

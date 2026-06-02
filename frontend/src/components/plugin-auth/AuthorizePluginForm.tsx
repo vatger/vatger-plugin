@@ -32,10 +32,10 @@ export function AuthorizePluginForm({
   const disabled = state === "loading" || state === "invalid_link" || state === "done"
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-4">
+    <div className="flex min-h-screen w-full items-center justify-center">
       <Card className="w-full max-w-md">
-        <div className="flex flex-col items-center gap-4 p-8">
-          <VatgerLogo className="h-10" />
+        <div className="my-2 flex flex-col items-center gap-4 px-4">
+          <VatgerLogo className="h-16" />
 
           <div className="space-y-1 text-center">
             <h1 className="text-xl font-semibold">Authorize plugin</h1>
@@ -50,7 +50,9 @@ export function AuthorizePluginForm({
             </p>
           ) : state === "invalid_link" ? (
             <div className="space-y-2 text-center text-sm text-destructive">
-              <p className="font-medium">This authorization link is not valid.</p>
+              <p className="font-medium">
+                This authorization link is not valid.
+              </p>
             </div>
           ) : (
             <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
@@ -67,7 +69,10 @@ export function AuthorizePluginForm({
               </div>
 
               {errorMessage && (
-                <p className="text-center text-sm text-destructive" role="alert">
+                <p
+                  className="text-center text-sm text-destructive"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}
