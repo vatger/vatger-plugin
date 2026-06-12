@@ -3,7 +3,7 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from api.guards import get_user, get_user_from_token
+from api.guards import get_user
 from api.models.silent_request_dto import SilentRequestCreateDTO, SilentRequestOutDTO
 from containers.dependencies import DependencyContainer
 from interfaces.services.silent_request_service_interface import (
@@ -116,31 +116,3 @@ async def delete_request(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="User must be active controller"
         ) from None
-
-
-@router.get("/plugin/{icao}", summary="Get all SilentRequest by ICAO")
-@inject
-def get_silent_requests(
-    icao: str,
-    user: Annotated[User, Depends(get_user_from_token)],
-    sr_service: Annotated[
-        SilentRequestServiceInterface,
-        Depends(Provide[DependencyContainer.silent_request_service]),
-    ],
-):
-    requests = sr_service.get_requests_by_icao(icao)
-
-    return [SilentRequestOutDTO(**element) for element in requests.model_dump()]
-
-
-@router.delete("/plugin/{callsign}", summary="Delete a SilentRequest by callsign")
-@inject
-def plugin_delete_request(
-    user: Annotated[User, Depends(get_user_from_token)],
-    sr_service: Annotated[
-        SilentRequestServiceInterface,
-        Depends(Provide[DependencyContainer.silent_request_service]),
-    ],
-    callsign: str | None = None,
-):
-    sr_service.delete_request(user, callsign)
