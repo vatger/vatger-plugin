@@ -6,13 +6,16 @@ import { Provider } from "react-redux"
 import { RouterProvider } from "react-router"
 import "./index.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <StrictMode>
         <ThemeProvider>
-          <RouterProvider router={router} />
+          <QueryClientProvider client={new QueryClient()}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
         </ThemeProvider>
       </StrictMode>
     </Provider>

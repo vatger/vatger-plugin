@@ -1,4 +1,4 @@
-export { Auth, AuthorizePluginToken } from "./Auth"
+export { Auth } from "./Auth"
 export { baseQuery, baseQueryWithAuth } from "./baseQuery"
 export { RequireAdmin, RequireAuth } from "./guards"
 export { useAppDispatch, useAppSelector } from "./hooks"

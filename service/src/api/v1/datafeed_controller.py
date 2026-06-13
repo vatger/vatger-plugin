@@ -21,7 +21,7 @@ async def get_user_pilot_data(
         Depends(Provide[DependencyContainer.datafeed_container.datafeed_repository]),
     ],
 ):
-    pilot_data = await datafeed_repo.get_pilot_by_cid(user.cid)
+    pilot_data = await datafeed_repo.get_pilot_by_cid(int(user.cid))
 
     if not pilot_data:
         return

@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 import pytest
 
 from interfaces.services.silent_request_service_interface import (
+    ControllerOfflineException,
     ExistingRequestException,
     InvalidAirportExpection,
     NoExistingRequestException,
@@ -238,6 +239,32 @@ async def test_invalid_airport(service, datafeed_repo, silent_repo):
         await service.create_request(user, type="TAXI")
 
 
+def test_get_requests_by_user_returns_matching_requests(service, silent_repo):
+    r1 = SilentRequestModel(
+        callsign="DLH1",
+        user_id=uuid.uuid4(),
+        departure_icao="EDDF",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    r2 = SilentRequestModel(
+        callsign="BAW1",
+        user_id=uuid.uuid4(),
+        departure_icao="EGLL",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    silent_repo.create_request(r1)
+    silent_repo.create_request(r2)
+
+    result = service.get_request_by_user(r1.user_id)
+
+    assert result.callsign == "DLH1"
+
+    result = service.get_request_by_user(r2.user_id)
+    assert result.callsign == "BAW1"
+
+
 def test_get_requests_by_icao_returns_matching_requests(service, silent_repo):
     r1 = SilentRequestModel(
         callsign="DLH1",
@@ -366,7 +393,7 @@ async def test_delete_other_users_request_raises_when_actor_offline(
     silent_repo.create_request(request)
 
     # datafeed has no controller for actor.cid, therefor
-    with pytest.raises(UserOfflineException):
+    with pytest.raises(ControllerOfflineException):
         await service.delete_request(actor=actor, target_callsign="DLH123")
 
 
@@ -413,5 +440,55 @@ async def test_delete_other_users_request_succeeds_when_actor_is_controller(
     datafeed_repo.add_controller(make_controller(actor.cid, facility=1))
 
     await service.delete_request(actor=actor, target_callsign="DLH123")
+
+    assert silent_repo.get_request_by_user_id(owner.id) is None
+
+
+@pytest.mark.asyncio
+async def test_delete_other_users_request_succeeds_when_actor_is_admin(service, silent_repo):
+    owner = make_user(cid=1111111)
+
+    actor = make_user(cid=2222222)
+    actor.admin = True
+
+    request = SilentRequestModel(
+        callsign="DLH123",
+        user_id=owner.id,
+        departure_icao="EDDF",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    silent_repo.create_request(request)
+
+    await service.delete_request(
+        actor=actor,
+        target_callsign="DLH123",
+    )
+
+    assert silent_repo.get_request_by_user_id(owner.id) is None
+
+
+@pytest.mark.asyncio
+async def test_admin_can_delete_request_while_offline(service, silent_repo):
+    owner = make_user(cid=1111111)
+
+    admin = make_user(cid=2222222)
+    admin.admin = True
+
+    request = SilentRequestModel(
+        callsign="DLH123",
+        user_id=owner.id,
+        departure_icao="EDDF",
+        type="TAXI",
+        requested_at=datetime.now(UTC),
+    )
+    silent_repo.create_request(request)
+
+    # admin is not added as a controller
+
+    await service.delete_request(
+        actor=admin,
+        target_callsign="DLH123",
+    )
 
     assert silent_repo.get_request_by_user_id(owner.id) is None

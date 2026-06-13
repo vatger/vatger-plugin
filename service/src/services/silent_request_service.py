@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime
 from typing import Literal
 
@@ -6,6 +7,7 @@ from interfaces.repositories.silent_request_repository_interface import (
     SilentRequestRepositoryInterface,
 )
 from interfaces.services.silent_request_service_interface import (
+    ControllerOfflineException,
     ExistingRequestException,
     InvalidAirportExpection,
     NoExistingRequestException,
@@ -35,9 +37,12 @@ class SilentRequestService(SilentRequestServiceInterface):
     def get_all_requests(self) -> list[SilentRequestModel]:
         return self.repo.get_all_requests() or []
 
+    def get_request_by_user(self, user_id: uuid.UUID) -> SilentRequestModel | None:
+        return self.repo.get_request_by_user_id(user_id)
+
     async def create_request(self, user: User, type: Literal["TAXI", "PUSHBACK"]):
         # check if user is online as pilot
-        pilot = await self.datafeed_repo.get_pilot_by_cid(user.cid)
+        pilot = await self.datafeed_repo.get_pilot_by_cid(int(user.cid))
 
         if not pilot:
             raise UserOfflineException
@@ -74,24 +79,24 @@ class SilentRequestService(SilentRequestServiceInterface):
     async def delete_request(self, actor: User, target_callsign: str | None = None):
         """If no target_callsign is provided, user requests the deletion of his own request"""
 
-        request = None
-        if target_callsign:
-            request = self.repo.get_request_by_callsign(target_callsign)
-        else:
-            request = self.repo.get_request_by_user_id(actor.id)
+        request = (
+            self.repo.get_request_by_callsign(target_callsign)
+            if target_callsign
+            else self.repo.get_request_by_user_id(actor.id)
+        )
 
         if not request:
             raise NoExistingRequestException
 
-        if request.user_id == actor.id:
-            return self.repo.delete_request_by_user(request.user_id)
-        else:
-            controller = await self.datafeed_repo.get_controller_by_cid(actor.cid)
+        # users may always delete their own request
+        # otherwise actor must be active controller
+        if request.user_id != actor.id and not actor.admin:
+            controller = await self.datafeed_repo.get_controller_by_cid(int(actor.cid))
 
             if not controller:
-                raise UserOfflineException
+                raise ControllerOfflineException
 
             if controller.isObserver():
                 raise UserMustBeControllerException
 
-            return self.repo.delete_request_by_user(request.user_id)
+        return self.repo.delete_request_by_user(request.user_id)

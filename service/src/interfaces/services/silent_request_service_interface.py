@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC, abstractmethod
 
 from models.silent_request_model import SilentRequestModel
@@ -5,6 +6,9 @@ from models.user import User
 
 
 class UserOfflineException(Exception): ...
+
+
+class ControllerOfflineException(Exception): ...
 
 
 class UserHasNoFlightplanException(Exception): ...
@@ -27,10 +31,13 @@ class SilentRequestServiceInterface(ABC):
     def get_requests_by_icao(self, icao: str) -> list[SilentRequestModel]: ...
 
     @abstractmethod
+    def get_request_by_user(self, user_id: uuid.UUID) -> SilentRequestModel | None: ...
+
+    @abstractmethod
     def get_all_requests(self) -> list[SilentRequestModel]: ...
 
     @abstractmethod
     async def create_request(self, user: User): ...
 
     @abstractmethod
-    async def delete_request(self, actor: User, target_callsign: str | None = None): ...
+    async def delete_request(self, actor: User, target_callsign: str | None = None) -> bool: ...
