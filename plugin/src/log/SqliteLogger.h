@@ -4,21 +4,22 @@
 
 #include <filesystem>
 #include <format>
+#include <string>
 
 #include "LoggerAsyncBase.h"
 
 namespace logging {
-class SqlLiteLogger : public LoggerAsyncBase {
+class SqliteLogger : public LoggerAsyncBase {
    protected:
     void emitLog(const LoggerAsyncBase::LogMessage& logMsg) override;
 
    public:
-    SqlLiteLogger();
-    SqlLiteLogger(const std::filesystem::path& dirPath);
-    ~SqlLiteLogger();
+    SqliteLogger();
+    explicit SqliteLogger(const std::filesystem::path& dir_path);
+    ~SqliteLogger();
 
    private:
-    sqlite3* m_database;
+    sqlite3* m_database_;
 
     void createLogFile(const std::filesystem::path& file);
     static std::string generateLogFileName() {

@@ -4,7 +4,7 @@
 #include "api/CurlRestClient.h"
 #include "auth/AuthService.h"
 #include "log/ConsoleLogger.h"
-#include "log/SqlLiteLogger.h"
+#include "log/SqliteLogger.h"
 #include "system/WindowsSystem.h"
 #include "utils/File.h"
 
