@@ -13,7 +13,7 @@ class ConsoleLogger : public LoggerAsyncBase {
 
    public:
     ConsoleLogger();
-    ~ConsoleLogger();
+    ~ConsoleLogger() = default;
 };
 
 }  // namespace logging
