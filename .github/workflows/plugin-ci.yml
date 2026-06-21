@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Run clang-format style check
         uses: jidicula/clang-format-action@v4.18.0
@@ -41,7 +41,7 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -63,7 +63,7 @@ jobs:
   #     runs-on: windows-2025
   #     steps:
   #       - name: Checkout
-  #         uses: actions/checkout@v6
+  #         uses: actions/checkout@v7
   #         with:
   #           submodules: recursive
 
@@ -87,7 +87,7 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download build
         uses: actions/download-artifact@v8
