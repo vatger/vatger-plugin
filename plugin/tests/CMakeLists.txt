@@ -1,6 +1,7 @@
 # Unit tests
 ADD_EXECUTABLE(unit_tests
     unit/api/test_CurlRestClient.cpp
+    unit/config/test_ConfigLoader.cpp
     unit/core/test_BackgroundExecuter.cpp
     unit/utils/test_String.cpp
     test_main.cpp
