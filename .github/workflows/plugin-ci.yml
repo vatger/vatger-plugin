@@ -19,9 +19,6 @@ on:
 permissions:
   contents: read
 
-env:
-  PROJECT_DIR: "plugin"
-
 jobs:
   format-check:
     runs-on: ubuntu-latest
@@ -33,7 +30,7 @@ jobs:
         uses: jidicula/clang-format-action@v4.18.0
         with:
           clang-format-version: "18"
-          check-path: "${{ env.PROJECT_DIR }}/src"
+          check-path: "src"
           fallback-style: "Google"
 
   build:
@@ -46,7 +43,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake -S ${{ env.PROJECT_DIR }} -B build -A Win32
+        run: cmake -S . -B build -A Win32
 
       - name: Build
         run: cmake --build build --parallel
@@ -69,7 +66,7 @@ jobs:
 
   #       - name: Configure CMake (for compile_commands.json)
   #         run: >
-  #           cmake -S ${{ env.PROJECT_DIR }} -B build-lint -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+  #           cmake -S . -B build-lint -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
   #       - name: Run static lint
   #         shell: pwsh

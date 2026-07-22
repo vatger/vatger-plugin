@@ -15,7 +15,6 @@ permissions:
   contents: write
 
 env:
-  PROJECT_DIR: "plugin"
   DLL_NAME: "VATGER-Plugin.dll"
 
 jobs:
@@ -31,15 +30,15 @@ jobs:
       - name: Get CMake Project Version
         id: cmake-version
         run: |
-          $version = (Select-String -Path "${{ env.PROJECT_DIR }}/CMakeLists.txt" -Pattern 'PROJECT\s*\(\s*\S+\s+VERSION\s+"?([0-9]+\.[0-9]+\.[0-9]+)"?' ).Matches[0].Groups[1].Value
+          $version = (Select-String -Path "CMakeLists.txt" -Pattern 'PROJECT\s*\(\s*\S+\s+VERSION\s+"?([0-9]+\.[0-9]+\.[0-9]+)"?' ).Matches[0].Groups[1].Value
           echo "version=$version" >> $env:GITHUB_OUTPUT
           Write-Host "Detected version: $version"
 
       - name: Configure CMake
-        run: cmake -S ${{ env.PROJECT_DIR }} -B ${{ env.PROJECT_DIR }}/build -A Win32
+        run: cmake -S . -B build -A Win32
 
       - name: Build
-        run: cmake --build ${{ env.PROJECT_DIR }}/build --parallel --config Release
+        run: cmake --build build --parallel --config Release
 
       - name: Create GitHub Release
         id: create_release
@@ -56,7 +55,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{env.PROJECT_DIR}}/build/Release/${{env.DLL_NAME}}
+          asset_path: build/Release/${{env.DLL_NAME}}
           asset_name: ${{env.DLL_NAME}}
           asset_content_type: application/octet-stream
         env:
