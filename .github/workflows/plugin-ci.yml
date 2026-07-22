@@ -4,17 +4,13 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - "plugin/external/**"
-      - "plugin/src/**"
-      - "plugin/tests/**"
-      - "plugin/CMakeLists.txt"
+    paths: &paths
+      - "external/**"
+      - "src/**"
+      - "tests/**"
+      - "CMakeLists.txt"
   pull_request:
-    paths:
-      - "plugin/external/**"
-      - "plugin/src/**"
-      - "plugin/tests/**"
-      - "plugin/CMakeLists.txt"
+    paths: *paths
 
 permissions:
   contents: read
