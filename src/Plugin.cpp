@@ -20,7 +20,6 @@ VatgerPlugin::VatgerPlugin()
     auto restClient = std::make_unique<api::CurlRestClient>();
     m_authService = std::make_unique<auth::AuthService>(std::move(restClient), system);
 
-    std::vector<vatger::IModule *> m_modules;
     m_modules.push_back(dynamic_cast<vatger::IModule *>(m_authService.get()));
     for (const auto &module : m_modules) {
         module->init(this);

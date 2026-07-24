@@ -28,6 +28,8 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
    private:
     std::unique_ptr<interfaces::IAuthService> m_authService;
 
+    std::vector<vatger::IModule *> m_modules;
+
     void RegisterModuleOnCompileCommand(const std::string &preword, IModule *module) override;
     std::unordered_map<std::string, IModule *> m_compileCommands;
 };
