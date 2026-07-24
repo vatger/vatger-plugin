@@ -1,13 +1,17 @@
 #include "plugin.h"
 
+#include <numeric>
+
 #include "Version.h"
 #include "api/CurlRestClient.h"
 #include "auth/AuthService.h"
 #include "core/BackGroundExecuter.h"
 #include "log/ConsoleLogger.h"
 #include "log/SqliteLogger.h"
+#include "module/sr/SilentRequestModule.h"
 #include "system/WindowsSystem.h"
 #include "utils/File.h"
+#include "utils/String.h"
 
 namespace vatger {
 VatgerPlugin::VatgerPlugin()
@@ -22,7 +26,10 @@ VatgerPlugin::VatgerPlugin()
     auto restClient = std::make_shared<api::CurlRestClient>();
     m_authService = std::make_unique<auth::AuthService>(restClient, system);
 
+    sr_module_ = std::make_unique<silentrequests::SilentRequestModule>(executer, restClient);
+
     m_modules.push_back(dynamic_cast<vatger::IModule *>(m_authService.get()));
+    m_modules.push_back(dynamic_cast<vatger::IModule *>(sr_module_.get()));
     for (const auto &module : m_modules) {
         module->init(this);
     }

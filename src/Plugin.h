@@ -11,6 +11,7 @@
 #include "log/ILogger.h"
 #include "module/IModule.h"
 #include "module/IPlugin.h"
+#include "module/sr/SilentRequestModule.h"
 
 namespace vatger {
 class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
@@ -28,6 +29,7 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
 
    private:
     std::unique_ptr<interfaces::IAuthService> m_authService;
+    std::unique_ptr<silentrequests::SilentRequestModule> sr_module_;
 
     std::vector<vatger::IModule *> m_modules;
 
