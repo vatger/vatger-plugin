@@ -50,6 +50,7 @@ SET(SOURCE_FILES
     src/log/ConsoleLogger.cpp
     src/config/ConfigLoader.cpp
     src/log/SqliteLogger.cpp
+    src/module/sr/SilentRequestModule.cpp
     src/system/WindowsSystem.cpp
     src/Plugin.cpp
     src/main.cpp
