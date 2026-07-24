@@ -17,8 +17,8 @@ VatgerPlugin::VatgerPlugin()
     m_logger->info("Version " + std::string(PLUGIN_VERSION) + " loaded");
 
     auto system = std::make_shared<WindowsSystem>();
-    auto restClient = std::make_unique<api::CurlRestClient>();
-    m_authService = std::make_unique<auth::AuthService>(std::move(restClient), system);
+    auto restClient = std::make_shared<api::CurlRestClient>();
+    m_authService = std::make_unique<auth::AuthService>(restClient, system);
 
     m_modules.push_back(dynamic_cast<vatger::IModule *>(m_authService.get()));
     for (const auto &module : m_modules) {

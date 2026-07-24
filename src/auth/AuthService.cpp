@@ -5,7 +5,7 @@
 using json = nlohmann::json;
 using namespace auth;
 
-AuthService::AuthService(std::unique_ptr<interfaces::IRestClient> restClient,
+AuthService::AuthService(std::shared_ptr<interfaces::IRestClient> restClient,
                          std::shared_ptr<interfaces::ISystem> system, std::string baseUrl,
                          std::chrono::milliseconds pollingInterval)
     : m_restClient(std::move(restClient)),

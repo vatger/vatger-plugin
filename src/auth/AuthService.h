@@ -18,7 +18,7 @@ namespace auth {
 
 class AuthService : public interfaces::IAuthService, public vatger::IModule {
    public:
-    AuthService(std::unique_ptr<interfaces::IRestClient> restClient, std::shared_ptr<interfaces::ISystem> system,
+    AuthService(std::shared_ptr<interfaces::IRestClient> restClient, std::shared_ptr<interfaces::ISystem> system,
                 std::string baseUrl = "http://localhost:8000",
                 std::chrono::milliseconds pollingInterval = std::chrono::seconds(5));
     ~AuthService();
@@ -34,7 +34,7 @@ class AuthService : public interfaces::IAuthService, public vatger::IModule {
     void validateToken();
     void pollToken(std::stop_token stopToken, PluginTokenStartDTO dto);
 
-    std::unique_ptr<interfaces::IRestClient> m_restClient;
+    std::shared_ptr<interfaces::IRestClient> m_restClient;
     std::shared_ptr<interfaces::ISystem> m_system;
 
     std::optional<std::string> m_token;
