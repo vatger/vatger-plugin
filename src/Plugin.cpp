@@ -24,6 +24,9 @@ VatgerPlugin::VatgerPlugin()
     for (const auto &module : m_modules) {
         module->init(this);
     }
+
+    // ensure airports are set on startup
+    OnAirportRunwayActivityChanged();
 }
 VatgerPlugin::~VatgerPlugin() {}
 
@@ -77,6 +80,40 @@ void VatgerPlugin::RegisterModuleOnCompileCommand(const std::string &preword, IM
     auto [it, inserted] = m_compileCommands.emplace(normalizedPreword, module);
     if (!inserted) {
         m_logger->error("CompileCommand Preword " + normalizedPreword + " already taken");
+    }
+}
+
+void VatgerPlugin::OnAirportRunwayActivityChanged() {
+    std::list<std::string> activeAirports;
+
+    EuroScopePlugIn::CSectorElement airport;
+    for (airport = this->SectorFileElementSelectFirst(EuroScopePlugIn::SECTOR_ELEMENT_AIRPORT);
+         airport.IsValid() == true;
+         airport = this->SectorFileElementSelectNext(airport, EuroScopePlugIn::SECTOR_ELEMENT_AIRPORT)) {
+        // skip airport if it is not selected as active airport for departures or arrivals
+        if (false == airport.IsElementActive(true, 0) && false == airport.IsElementActive(false, 0)) continue;
+
+        // get the airport ICAO
+        auto airportICAO = utils::String::FindIcao(utils::String::Trim(airport.GetName()));
+        // skip airport if no ICAO has been found
+        if (airportICAO == "") continue;
+
+        // check if the airport has been added already, add if it does not exist
+        if (std::find(activeAirports.begin(), activeAirports.end(), airportICAO) == activeAirports.end()) {
+            activeAirports.push_back(airportICAO);
+        }
+    }
+
+    if (activeAirports.empty()) {
+        m_logger->info("Airport/Runway Change, no active airports");
+    } else {
+        m_logger->info("Airport/Runway Change, active airports: " +
+                       std::accumulate(std::next(activeAirports.begin()), activeAirports.end(), activeAirports.front(),
+                                       [](const std::string &acc, const std::string &str) { return acc + " " + str; }));
+    }
+
+    for (const auto &module : m_modules) {
+        module->OnActiveAirportsChange(activeAirports);
     }
 }
 

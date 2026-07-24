@@ -24,6 +24,7 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
     void DisplayMessage(const std::string &message, const std::string &sender = "VatgerPlugin");
 
     bool OnCompileCommand(const char *sCommandLine) override;
+    void OnAirportRunwayActivityChanged() override;
 
    private:
     std::unique_ptr<interfaces::IAuthService> m_authService;
