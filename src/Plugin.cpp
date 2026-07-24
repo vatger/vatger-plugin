@@ -3,6 +3,7 @@
 #include "Version.h"
 #include "api/CurlRestClient.h"
 #include "auth/AuthService.h"
+#include "core/BackGroundExecuter.h"
 #include "log/ConsoleLogger.h"
 #include "log/SqliteLogger.h"
 #include "system/WindowsSystem.h"
@@ -16,6 +17,7 @@ VatgerPlugin::VatgerPlugin()
     DisplayMessage("Version " + std::string(PLUGIN_VERSION) + " loaded", "Initialisation");
     m_logger->info("Version " + std::string(PLUGIN_VERSION) + " loaded");
 
+    auto executer = std::make_shared<BackgroundExecutor>(m_logger);
     auto system = std::make_shared<WindowsSystem>();
     auto restClient = std::make_shared<api::CurlRestClient>();
     m_authService = std::make_unique<auth::AuthService>(restClient, system);
