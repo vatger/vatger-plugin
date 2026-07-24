@@ -14,23 +14,22 @@ class CurlRestClient : public interfaces::IRestClient {
     CurlRestClient();
     ~CurlRestClient();
 
-    interfaces::HttpResponse get(const std::string_view &url,
+    interfaces::HttpResponse get(const std::string &url,
                                  const std::unordered_map<std::string, std::string> &headers = {}) override;
 
-    interfaces::HttpResponse post(const std::string_view &url, const std::string_view &body,
+    interfaces::HttpResponse post(const std::string &url, const std::string_view &body,
                                   const std::unordered_map<std::string, std::string> &headers = {}) override;
 
-    interfaces::HttpResponse put(const std::string_view &url, const std::string_view &body,
+    interfaces::HttpResponse put(const std::string &url, const std::string_view &body,
                                  const std::unordered_map<std::string, std::string> &headers = {}) override;
 
-    interfaces::HttpResponse patch(const std::string_view &url, const std::string_view &body,
+    interfaces::HttpResponse patch(const std::string &url, const std::string_view &body,
                                    const std::unordered_map<std::string, std::string> &headers = {}) override;
 
-    interfaces::HttpResponse del(const std::string_view &url,
+    interfaces::HttpResponse del(const std::string &url,
                                  const std::unordered_map<std::string, std::string> &headers = {}) override;
 
    private:
-    struct curl_slist *m_commonHeaders = nullptr;
     struct Communication {
         std::mutex lock;
         CURL *socket;
