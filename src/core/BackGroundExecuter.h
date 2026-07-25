@@ -128,9 +128,15 @@ class BackgroundExecutor : public IBackgroundExecutor {
             // execute task
             try {
                 task.fn();
+            } catch (const std::exception& e) {
+                if (m_logger) {
+                    m_logger->error("BackgroundExecutor task " + std::to_string(task.id) +
+                                    " threw an exception: " + e.what());
+                }
             } catch (...) {
                 if (m_logger) {
-                    m_logger->error("BackgroundExecutor task threw an exception");
+                    m_logger->error("BackgroundExecutor task " + std::to_string(task.id) +
+                                    " threw a non-standard exception");
                 }
             }
 
