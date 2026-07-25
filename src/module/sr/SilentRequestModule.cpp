@@ -32,15 +32,17 @@ void SilentRequestModule::update() {
     std::lock_guard airport_lock(airports_mutex_);
     std::map<std::string, SilentRequestDTO> silent_requests;
     for (auto& icao : airports_) {
-        auto response = rest_client_->get("localhostS:8022/api/v1/silent-request/" + icao);
+        auto response = rest_client_->get("localhost:8022/api/v1/silent-request/" + icao);
 
         if (response.statusCode != 200) {
             continue;
         }
 
-        auto response_dto = nlohmann::json::parse(response.body).get<SilentRequestDTO>();
+        auto response_dtos = nlohmann::json::parse(response.body).get<std::vector<SilentRequestDTO>>();
 
-        silent_requests.emplace(response_dto.callsign, response_dto);
+        for (auto& response_dto : response_dtos) {
+            silent_requests.emplace(response_dto.callsign, std::move(response_dto));
+        }
     }
 
     std::lock_guard request_lock(silent_requests_mutex_);
