@@ -13,15 +13,6 @@
 #include "module/IPlugin.h"
 #include "utils/Date.h"
 
-static std::chrono::utc_clock::time_point isoStringToTimestamp(const std::string& timestamp) {
-    std::chrono::sys_time<std::chrono::seconds> tp;
-
-    std::istringstream ss(timestamp);
-    ss >> std::chrono::parse("%FT%T%Z", tp);
-
-    return std::chrono::utc_clock::from_sys(tp);
-}
-
 namespace silentrequests {
 enum class SilentRequestType { TAXI, PUSHBACK };
 
