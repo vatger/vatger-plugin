@@ -35,5 +35,7 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
 
     void RegisterModuleOnCompileCommand(const std::string &preword, IModule *module) override;
     std::unordered_map<std::string, IModule *> m_compileCommands;
+    void RegisterModuleOnGetTagItem(TagItemDefinition item, IModule *module) override;
+    std::unordered_map<int, IModule *> tagItemToModule_;
 };
 }  // namespace vatger

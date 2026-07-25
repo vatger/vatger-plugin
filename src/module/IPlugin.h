@@ -13,6 +13,12 @@ class IPlugin {
 
     virtual void DisplayMessage(const std::string& message, const std::string& sender = "VatgerPlugin") = 0;
     virtual void RegisterModuleOnCompileCommand(const std::string& preword, IModule* module) = 0;
+
+    struct TagItemDefinition {
+        int code;
+        std::string name;
+    };
+    virtual void RegisterModuleOnGetTagItem(TagItemDefinition item, IModule* module) = 0;
 };
 
 }  // namespace vatger

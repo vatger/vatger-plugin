@@ -1,6 +1,7 @@
 #include "plugin.h"
 
 #include <numeric>
+#include <typeinfo>
 
 #include "Version.h"
 #include "api/CurlRestClient.h"
@@ -79,6 +80,17 @@ bool VatgerPlugin::OnCompileCommand(const char *sCommandLine) {
 
     DisplayMessage("Unknown command: " + preword);
     return true;
+}
+
+void VatgerPlugin::RegisterModuleOnGetTagItem(TagItemDefinition item, IModule *module) {
+    const auto [it, inserted] = tagItemToModule_.emplace(item.code, module);
+    if (!inserted) {
+        // TODO: handle two modules claiming the same ItemCode
+        m_logger->error("Two modules tried registering item code" + std::to_string(item.code) +
+                        ", conflicting module: " + typeid(*module).name());
+        return;
+    }
+    RegisterTagItemType(item.name.c_str(), item.code);
 }
 
 void VatgerPlugin::RegisterModuleOnCompileCommand(const std::string &preword, IModule *module) {
