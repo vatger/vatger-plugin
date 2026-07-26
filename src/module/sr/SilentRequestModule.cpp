@@ -25,6 +25,11 @@ void SilentRequestModule::init(vatger::IPlugin* plugin) {
     }
 }
 
+void SilentRequestModule::OnConfigChange(const config::PluginConfig& config) {
+    std::unique_lock config_lock(config_mutex_);
+    base_url_ = config.server_url;
+}
+
 void SilentRequestModule::handleOnCompileCommand(const std::string& command) {}
 
 void SilentRequestModule::OnActiveAirportsChange(const std::list<std::string> icaos) {
@@ -37,6 +42,7 @@ void SilentRequestModule::update() {
     std::lock_guard airport_lock(airports_mutex_);
     std::map<std::string, SilentRequestDTO> silent_requests;
     for (auto& icao : airports_) {
+        std::shared_lock config_lock(config_mutex_);
         auto response = rest_client_->get(base_url_ + "/api/v1/silent-request/" + icao);
 
         if (response.statusCode != 200) {

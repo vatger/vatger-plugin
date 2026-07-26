@@ -5,9 +5,11 @@
 #include <memory>
 #include <mutex>
 #include <nlohmann/json.hpp>
+#include <shared_mutex>
 #include <string>
 
 #include "api/IRestClient.h"
+#include "config/PluginConfig.h"
 #include "core/IBackGroundExecuter.h"
 #include "module/IModule.h"
 #include "module/IPlugin.h"
@@ -46,6 +48,7 @@ class SilentRequestModule : public vatger::IModule {
     std::shared_ptr<IBackgroundExecutor> executor_;
     std::shared_ptr<interfaces::IRestClient> rest_client_;
 
+    std::shared_mutex config_mutex_;
     std::string base_url_ = "https://plugin.vatger.de";
     void update();
     std::optional<IBackgroundExecutor::TaskId> task_id_ = std::nullopt;
@@ -71,6 +74,7 @@ class SilentRequestModule : public vatger::IModule {
     ~SilentRequestModule();
 
     void init(vatger::IPlugin* plugin) override;
+    void OnConfigChange(const config::PluginConfig& config) override;
     void handleOnCompileCommand(const std::string& command) override;
 
     void OnActiveAirportsChange(const std::list<std::string> icaos) override;
