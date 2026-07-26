@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "module/IPlugin.h"
@@ -16,5 +17,21 @@ class IModule {
     /// @brief gets called when the RunwayDialog closes
     /// @param icaos the list of active airports
     virtual void OnActiveAirportsChange(const std::list<std::string> icaos) {};
+
+    struct RGB {
+        std::uint8_t r, g, b;
+    };
+    struct TagData {
+        std::string callsign;
+    };
+    struct TagRenderData {
+        std::string item_string;
+        std::optional<RGB> text_color;
+    };
+    virtual std::optional<TagRenderData> handleOnGetTagItem(const TagData& data, int item_code) {
+        (void)data;
+        (void)item_code;
+        return std::nullopt;
+    };
 };
 }  // namespace vatger
