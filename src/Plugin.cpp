@@ -82,6 +82,40 @@ bool VatgerPlugin::OnCompileCommand(const char *sCommandLine) {
     return true;
 }
 
+void VatgerPlugin::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlugIn::CRadarTarget RadarTarget,
+                                int ItemCode, int TagData, char sItemString[16], int *pColorCode, COLORREF *pRGB,
+                                double *pFontSize) {
+    (void)RadarTarget;
+    (void)TagData;
+    (void)pFontSize;
+
+    if (FlightPlan.IsValid() == false) {
+        return;
+    }
+
+    auto it = tagItemToModule_.find(ItemCode);
+    if (it == tagItemToModule_.end()) {
+        return;  // no module owns this item code
+    }
+
+    IModule::TagData data;
+    data.callsign = FlightPlan.GetCallsign();
+
+    const auto render_data = it->second->handleOnGetTagItem(data, ItemCode);
+
+    if (!render_data) {
+        return;  // module owns this item code, but did not return data to show
+    }
+    std::strcpy(sItemString, render_data->item_string.c_str());
+
+    if (render_data->text_color) {
+        *pColorCode = EuroScopePlugIn::TAG_COLOR_RGB_DEFINED;
+        *pRGB = RGB(render_data->text_color->r, render_data->text_color->g, render_data->text_color->b);
+    } else {
+        *pColorCode = EuroScopePlugIn::TAG_COLOR_DEFAULT;
+    }
+}
+
 void VatgerPlugin::RegisterModuleOnGetTagItem(TagItemDefinition item, IModule *module) {
     const auto [it, inserted] = tagItemToModule_.emplace(item.code, module);
     if (!inserted) {

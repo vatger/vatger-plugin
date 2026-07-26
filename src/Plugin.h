@@ -26,6 +26,8 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
 
     bool OnCompileCommand(const char *sCommandLine) override;
     void OnAirportRunwayActivityChanged() override;
+    void OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlugIn::CRadarTarget RadarTarget, int ItemCode,
+                      int TagData, char sItemString[16], int *pColorCode, COLORREF *pRGB, double *pFontSize) override;
 
    private:
     std::unique_ptr<interfaces::IAuthService> m_authService;
