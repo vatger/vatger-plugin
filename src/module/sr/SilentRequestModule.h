@@ -40,7 +40,6 @@ inline void from_json(const nlohmann::json& j, SilentRequestDTO& dto) {
 }
 
 class SilentRequestModule : public vatger::IModule {
-   public:
    private:
     vatger::IPlugin* m_plugin = nullptr;
 
@@ -55,6 +54,16 @@ class SilentRequestModule : public vatger::IModule {
     std::mutex silent_requests_mutex_;
     std::map<std::string, SilentRequestDTO> silent_requests_;
 
+    enum class TagItems : int {
+        REQUEST_TYPE = 1000,
+        REQUEST_TYPE_DELAY,
+    };
+    std::vector<vatger::IPlugin::TagItemDefinition> tag_items_ = {
+        vatger::IPlugin::TagItemDefinition{static_cast<int>(TagItems::REQUEST_TYPE), "SilentRequest: request type"},
+        vatger::IPlugin::TagItemDefinition{static_cast<int>(TagItems::REQUEST_TYPE_DELAY),
+                                           "SilentRequest: request type with delay"},
+    };
+
    public:
     SilentRequestModule(std::shared_ptr<IBackgroundExecutor> executer,
                         std::shared_ptr<interfaces::IRestClient> restClient);
@@ -64,5 +73,7 @@ class SilentRequestModule : public vatger::IModule {
     void handleOnCompileCommand(const std::string& command) override;
 
     void OnActiveAirportsChange(const std::list<std::string> icaos) override;
+
+    std::optional<TagRenderData> handleOnGetTagItem(const TagData& data, int item_code) override;
 };
 }  // namespace silentrequests

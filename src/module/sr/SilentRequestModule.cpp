@@ -3,6 +3,7 @@
 #include <chrono>
 #include <nlohmann/json.hpp>
 
+using namespace vatger;
 using namespace silentrequests;
 
 SilentRequestModule::SilentRequestModule(std::shared_ptr<IBackgroundExecutor> executor,
@@ -18,6 +19,10 @@ SilentRequestModule::~SilentRequestModule() {
 void SilentRequestModule::init(vatger::IPlugin* plugin) {
     m_plugin = plugin;
     task_id_ = executor_->postEvery(std::chrono::seconds(5), std::bind(&SilentRequestModule::update, this));
+
+    for (const auto& tag_item : tag_items_) {
+        m_plugin->RegisterModuleOnGetTagItem(tag_item, this);
+    }
 }
 
 void SilentRequestModule::handleOnCompileCommand(const std::string& command) {}
@@ -47,4 +52,42 @@ void SilentRequestModule::update() {
 
     std::lock_guard request_lock(silent_requests_mutex_);
     silent_requests_ = silent_requests;
+}
+
+std::optional<IModule::TagRenderData> SilentRequestModule::handleOnGetTagItem(const IModule::TagData& data,
+                                                                              int item_code) {
+    (void)item_code;
+
+    std::lock_guard request_lock(silent_requests_mutex_);
+    auto it = silent_requests_.find(data.callsign);
+    if (it == silent_requests_.end()) {
+        return std::nullopt;  // no request to show
+    }
+
+    const auto request = it->second;
+
+    IModule::TagRenderData tag_render_data;
+    switch (static_cast<TagItems>(item_code)) {
+        case TagItems::REQUEST_TYPE: {
+            tag_render_data.item_string = request.type == SilentRequestType::PUSHBACK ? "TX" : "PB";
+            tag_render_data.text_color =
+                request.type == SilentRequestType::PUSHBACK ? IModule::RGB{127, 252, 73} : IModule::RGB{0, 255, 0};
+
+            break;
+        }
+        case TagItems::REQUEST_TYPE_DELAY: {
+            tag_render_data.item_string = request.type == SilentRequestType::PUSHBACK ? "TX" : "PB";
+            const auto now = std::chrono::utc_clock::now();
+            const auto diff = std::chrono::duration_cast<std::chrono::minutes>(now - request.requested_at);
+            tag_render_data.item_string += " " + std::to_string(diff.count());
+            tag_render_data.text_color =
+                request.type == SilentRequestType::PUSHBACK ? IModule::RGB{127, 252, 73} : IModule::RGB{0, 255, 0};
+
+            break;
+        }
+        default:
+            break;
+    };
+
+    return tag_render_data;
 }
