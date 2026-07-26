@@ -6,6 +6,8 @@
 #include "Version.h"
 #include "api/CurlRestClient.h"
 #include "auth/AuthService.h"
+#include "config/ConfigLoader.h"
+#include "config/PluginConfig.h"
 #include "core/BackGroundExecuter.h"
 #include "log/ConsoleLogger.h"
 #include "log/SqliteLogger.h"
@@ -21,6 +23,20 @@ VatgerPlugin::VatgerPlugin()
 
     DisplayMessage("Version " + std::string(PLUGIN_VERSION) + " loaded", "Initialisation");
     m_logger->info("Version " + std::string(PLUGIN_VERSION) + " loaded");
+
+    // get the dll-path
+    char path[MAX_PATH + 1] = {0};
+    GetModuleFileNameA((HINSTANCE)&__ImageBase, path, MAX_PATH);
+    PathRemoveFileSpecA(path);
+    const auto dllPath = std::string(path);
+    config::PluginConfig config;
+    config::ConfigLoader loader;
+    if (false == loader.parse(dllPath + "/settings.txt", config) || false == config.valid) {
+        std::string message = "settings.txt:" + std::to_string(loader.errorLine()) + ": " + loader.errorMessage();
+        DisplayMessage(message, "Config");
+    } else {
+        DisplayMessage("loaded", "Config");
+    }
 
     auto executer = std::make_shared<BackgroundExecutor>(m_logger);
     auto system = std::make_shared<WindowsSystem>();
