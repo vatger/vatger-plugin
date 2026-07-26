@@ -37,7 +37,7 @@ void SilentRequestModule::update() {
     std::lock_guard airport_lock(airports_mutex_);
     std::map<std::string, SilentRequestDTO> silent_requests;
     for (auto& icao : airports_) {
-        auto response = rest_client_->get("localhost:8022/api/v1/silent-request/" + icao);
+        auto response = rest_client_->get(base_url_ + "/api/v1/silent-request/" + icao);
 
         if (response.statusCode != 200) {
             continue;

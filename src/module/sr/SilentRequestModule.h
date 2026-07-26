@@ -46,6 +46,7 @@ class SilentRequestModule : public vatger::IModule {
     std::shared_ptr<IBackgroundExecutor> executor_;
     std::shared_ptr<interfaces::IRestClient> rest_client_;
 
+    std::string base_url_ = "https://plugin.vatger.de";
     void update();
     std::optional<IBackgroundExecutor::TaskId> task_id_ = std::nullopt;
 
