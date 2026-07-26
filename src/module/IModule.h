@@ -3,6 +3,7 @@
 #include <optional>
 #include <string>
 
+#include "config/PluginConfig.h"
 #include "module/IPlugin.h"
 
 namespace vatger {
@@ -12,6 +13,7 @@ class IModule {
     virtual ~IModule() = default;
 
     virtual void init(IPlugin* plugin) = 0;
+    virtual void OnConfigChange(const config::PluginConfig& config) { (void)config; };
     virtual void handleOnCompileCommand(const std::string& command) = 0;
 
     /// @brief gets called when the RunwayDialog closes

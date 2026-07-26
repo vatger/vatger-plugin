@@ -49,6 +49,7 @@ VatgerPlugin::VatgerPlugin()
     m_modules.push_back(dynamic_cast<vatger::IModule *>(sr_module_.get()));
     for (const auto &module : m_modules) {
         module->init(this);
+        module->OnConfigChange(config);
     }
 
     // ensure airports are set on startup
