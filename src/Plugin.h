@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "auth/IAuthService.h"
+#include "auth/IAuthModule.h"
 #include "log/ILogger.h"
 #include "module/IModule.h"
 #include "module/IPlugin.h"
@@ -30,7 +30,7 @@ class VatgerPlugin : public EuroScopePlugIn::CPlugIn, public IPlugin {
                       int TagData, char sItemString[16], int *pColorCode, COLORREF *pRGB, double *pFontSize) override;
 
    private:
-    std::unique_ptr<interfaces::IAuthService> m_authService;
+    std::unique_ptr<interfaces::IAuthModule> m_authService;
     std::unique_ptr<silentrequests::SilentRequestModule> sr_module_;
 
     std::vector<vatger::IModule *> m_modules;

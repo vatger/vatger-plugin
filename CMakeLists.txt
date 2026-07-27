@@ -46,7 +46,7 @@ ADD_DEFINITIONS(
 
 SET(SOURCE_FILES
     src/api/CurlRestClient.cpp
-    src/auth/AuthService.cpp
+    src/auth/AuthModule.cpp
     src/log/ConsoleLogger.cpp
     src/config/ConfigLoader.cpp
     src/log/SqliteLogger.cpp

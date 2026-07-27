@@ -10,7 +10,7 @@
 
 #include "api/IRestClient.h"
 #include "auth/AuthTypes.h"
-#include "auth/IAuthService.h"
+#include "auth/IAuthModule.h"
 #include "config/PluginConfig.h"
 #include "module/IModule.h"
 #include "module/IPlugin.h"
@@ -18,12 +18,12 @@
 
 namespace auth {
 
-class AuthService : public interfaces::IAuthService, public vatger::IModule {
+class AuthModule : public interfaces::IAuthModule, public vatger::IModule {
    public:
-    AuthService(std::shared_ptr<interfaces::IRestClient> restClient, std::shared_ptr<interfaces::ISystem> system,
-                std::string baseUrl = "https://plugin.vatger.de",
-                std::chrono::milliseconds pollingInterval = std::chrono::seconds(5));
-    ~AuthService();
+    AuthModule(std::shared_ptr<interfaces::IRestClient> restClient, std::shared_ptr<interfaces::ISystem> system,
+               std::string baseUrl = "https://plugin.vatger.de",
+               std::chrono::milliseconds pollingInterval = std::chrono::seconds(5));
+    ~AuthModule();
 
     bool isAuthenticated() override;
     std::optional<std::string> getToken() override;

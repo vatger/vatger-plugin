@@ -1,35 +1,34 @@
-#include "AuthService.h"
+#include "AuthModule.h"
 
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 using namespace auth;
 
-AuthService::AuthService(std::shared_ptr<interfaces::IRestClient> restClient,
-                         std::shared_ptr<interfaces::ISystem> system, std::string baseUrl,
-                         std::chrono::milliseconds pollingInterval)
+AuthModule::AuthModule(std::shared_ptr<interfaces::IRestClient> restClient, std::shared_ptr<interfaces::ISystem> system,
+                       std::string baseUrl, std::chrono::milliseconds pollingInterval)
     : m_restClient(std::move(restClient)),
       m_system(system),
       m_baseUrl(std::move(baseUrl)),
       m_pollingInterval(pollingInterval) {}
 
-AuthService::~AuthService() {}
+AuthModule::~AuthModule() {}
 
-bool AuthService::isAuthenticated() {
+bool AuthModule::isAuthenticated() {
     if (!m_token.has_value()) {
         validateToken();
     }
     return m_token.has_value();
 }
 
-std::optional<std::string> AuthService::getToken() {
+std::optional<std::string> AuthModule::getToken() {
     if (!m_token.has_value()) {
         validateToken();
     }
     return m_token;
 }
 
-AuthFlowResult AuthService::startAuthFlow() {
+AuthFlowResult AuthModule::startAuthFlow() {
     std::shared_lock lock(config_mutex_);
     const std::unordered_map<std::string, std::string> headers = {{"Content-Type", "application/json"}};
     const auto response = m_restClient->post(m_baseUrl + "/api/v1/plugin-token/start", "", headers);
@@ -57,7 +56,7 @@ AuthFlowResult AuthService::startAuthFlow() {
     return AuthFlowResult::ok(dto.userRedirectUrl);
 }
 
-void AuthService::validateToken() {
+void AuthModule::validateToken() {
     m_token = m_system->getDeviceToken();
     if (!m_token.has_value()) return;
 
@@ -83,7 +82,7 @@ void AuthService::validateToken() {
     }
 }
 
-void AuthService::pollToken(std::stop_token stopToken, PluginTokenStartDTO dto) {
+void AuthModule::pollToken(std::stop_token stopToken, PluginTokenStartDTO dto) {
     json body;
     body["secret"] = dto.pollingSecret;
     const std::string bodyStr = body.dump();
@@ -120,17 +119,17 @@ void AuthService::pollToken(std::stop_token stopToken, PluginTokenStartDTO dto) 
     }
 }
 
-void AuthService::init(vatger::IPlugin* plugin) {
+void AuthModule::init(vatger::IPlugin* plugin) {
     m_plugin = plugin;
     m_plugin->RegisterModuleOnCompileCommand("auth", this);
 };
 
-void AuthService::OnConfigChange(const config::PluginConfig& config) {
+void AuthModule::OnConfigChange(const config::PluginConfig& config) {
     std::unique_lock lock(config_mutex_);
     m_baseUrl = config.server_url;
 }
 
-void AuthService::handleOnCompileCommand(const std::string& command) {
+void AuthModule::handleOnCompileCommand(const std::string& command) {
     // FIXME: use BackgroundExecuter to avoid small EuroScope freezes
     if (command == "status") {
         const auto isAuthenticated = this->isAuthenticated();

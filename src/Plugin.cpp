@@ -5,7 +5,7 @@
 
 #include "Version.h"
 #include "api/CurlRestClient.h"
-#include "auth/AuthService.h"
+#include "auth/AuthModule.h"
 #include "config/ConfigLoader.h"
 #include "config/PluginConfig.h"
 #include "core/BackGroundExecuter.h"
@@ -41,7 +41,7 @@ VatgerPlugin::VatgerPlugin()
     auto executer = std::make_shared<BackgroundExecutor>(m_logger);
     auto system = std::make_shared<WindowsSystem>();
     auto restClient = std::make_shared<api::CurlRestClient>();
-    m_authService = std::make_unique<auth::AuthService>(restClient, system);
+    m_authService = std::make_unique<auth::AuthModule>(restClient, system);
 
     sr_module_ = std::make_unique<silentrequests::SilentRequestModule>(executer, restClient);
 

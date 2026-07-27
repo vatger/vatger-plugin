@@ -7,9 +7,9 @@
 
 namespace interfaces {
 
-class IAuthService {
+class IAuthModule {
    public:
-    virtual ~IAuthService() = default;
+    virtual ~IAuthModule() = default;
 
     virtual bool isAuthenticated() = 0;
     virtual std::optional<std::string> getToken() = 0;
