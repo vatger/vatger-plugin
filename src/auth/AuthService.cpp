@@ -30,7 +30,7 @@ std::optional<std::string> AuthService::getToken() {
 }
 
 AuthFlowResult AuthService::startAuthFlow() {
-    const auto response = m_restClient->post(m_baseUrl + "/api/v1/plugin-token/start", "");
+    std::shared_lock lock(config_mutex_);
 
     if (response.statusCode != 200) {
         return AuthFlowResult::error(AuthFlowStatus::NetworkError,
@@ -54,6 +54,7 @@ void AuthService::validateToken() {
     m_token = m_system->getDeviceToken();
     if (!m_token.has_value()) return;
 
+    std::shared_lock lock(config_mutex_);
     const std::unordered_map<std::string, std::string> headers = {{"Authorization", "Bearer " + m_token.value()}};
     const auto response = m_restClient->get(m_baseUrl + "/api/v1/plugin-token/me", headers);
 
@@ -98,6 +99,11 @@ void AuthService::init(vatger::IPlugin* plugin) {
     m_plugin = plugin;
     m_plugin->RegisterModuleOnCompileCommand("auth", this);
 };
+
+void AuthService::OnConfigChange(const config::PluginConfig& config) {
+    std::unique_lock lock(config_mutex_);
+    m_baseUrl = config.server_url;
+}
 
 void AuthService::handleOnCompileCommand(const std::string& command) {
     // FIXME: use BackgroundExecuter to avoid small EuroScope freezes
