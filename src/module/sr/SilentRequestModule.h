@@ -67,6 +67,8 @@ class SilentRequestModule : public vatger::IModule {
         vatger::IPlugin::TagItemDefinition{static_cast<int>(TagItems::REQUEST_TYPE_DELAY),
                                            "SilentRequest: request type with delay"},
     };
+    IModule::RGB color_pushback_request_ = IModule::RGB{245, 239, 13};
+    IModule::RGB color_taxi_request_ = IModule::RGB{0, 128, 0};
 
    public:
     SilentRequestModule(std::shared_ptr<IBackgroundExecutor> executer,

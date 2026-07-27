@@ -28,6 +28,11 @@ void SilentRequestModule::init(vatger::IPlugin* plugin) {
 void SilentRequestModule::OnConfigChange(const config::PluginConfig& config) {
     std::unique_lock config_lock(config_mutex_);
     base_url_ = config.server_url;
+
+    color_pushback_request_ =
+        IModule::RGB{config.pushback_request_color.r, config.pushback_request_color.g, config.pushback_request_color.b};
+    color_taxi_request_ =
+        IModule::RGB{config.taxi_request_color.r, config.taxi_request_color.g, config.taxi_request_color.b};
 }
 
 void SilentRequestModule::handleOnCompileCommand(const std::string& command) {}
@@ -72,12 +77,13 @@ std::optional<IModule::TagRenderData> SilentRequestModule::handleOnGetTagItem(co
 
     const auto request = it->second;
 
+    std::shared_lock config_lock(config_mutex_);  // lock the config, since we are reading colors from it
     IModule::TagRenderData tag_render_data;
     switch (static_cast<TagItems>(item_code)) {
         case TagItems::REQUEST_TYPE: {
             tag_render_data.item_string = request.type == SilentRequestType::PUSHBACK ? "TX" : "PB";
             tag_render_data.text_color =
-                request.type == SilentRequestType::PUSHBACK ? IModule::RGB{127, 252, 73} : IModule::RGB{0, 255, 0};
+                request.type == SilentRequestType::PUSHBACK ? color_pushback_request_ : color_taxi_request_;
 
             break;
         }
@@ -87,7 +93,7 @@ std::optional<IModule::TagRenderData> SilentRequestModule::handleOnGetTagItem(co
             const auto diff = std::chrono::duration_cast<std::chrono::minutes>(now - request.requested_at);
             tag_render_data.item_string += " " + std::to_string(diff.count());
             tag_render_data.text_color =
-                request.type == SilentRequestType::PUSHBACK ? IModule::RGB{127, 252, 73} : IModule::RGB{0, 255, 0};
+                request.type == SilentRequestType::PUSHBACK ? color_pushback_request_ : color_taxi_request_;
 
             break;
         }
