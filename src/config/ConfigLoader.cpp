@@ -40,6 +40,22 @@ bool ConfigLoader::parseColor(const std::string &block, COLORREF &color, std::ui
     return true;
 }
 
+bool ConfigLoader::parseColor(const std::string &block, Color &color, std::uint32_t line) {
+    std::vector<std::string> colorValues = utils::String::SplitString(block, ",");
+
+    if (colorValues.size() != 3) {
+        this->error_line_ = line;
+        this->error_message_ = "Invalid color config";
+        return false;
+    }
+
+    color.r = static_cast<std::uint8_t>(std::atoi(colorValues[0].c_str()));
+    color.g = static_cast<std::uint8_t>(std::atoi(colorValues[1].c_str()));
+    color.b = static_cast<std::uint8_t>(std::atoi(colorValues[2].c_str()));
+
+    return true;
+}
+
 bool ConfigLoader::parse(const std::string &filename, PluginConfig &config) {
     std::ifstream stream(filename);
     if (!stream.is_open()) {
@@ -77,6 +93,14 @@ bool ConfigLoader::parse(const std::string &filename, PluginConfig &config) {
 
         if (key == "SERVER_url") {
             config.server_url = value;
+        } else if (key == "PUSHBACK_REQUEST_COLOR") {
+            if (!this->parseColor(value, config.pushback_request_color, lineNumber)) {
+                return false;
+            }
+        } else if (key == "TAXI_REQUEST_COLOR") {
+            if (!this->parseColor(value, config.taxi_request_color, lineNumber)) {
+                return false;
+            }
         } else {
             config.extra[key] = value;
         }

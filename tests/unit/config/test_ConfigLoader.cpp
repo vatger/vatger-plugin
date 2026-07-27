@@ -12,7 +12,6 @@
 #include "config/ConfigLoader.h"
 #include "config/PluginConfig.h"
 
-
 using namespace config;
 
 namespace {
@@ -156,4 +155,21 @@ TEST(ConfigLoaderTest, LaterDuplicateKeyOverwritesEarlierOne) {
 
     ASSERT_TRUE(loader.parse(file.path(), cfg));
     EXPECT_EQ(cfg.server_url, "https://second.example");
+}
+
+TEST(ConfigLoaderTest, TestColors) {
+    TempConfigFile file("PUSHBACK_REQUEST_COLOR=255,0,0\nTAXI_REQUEST_COLOR=255,0,255");
+    ConfigLoader loader;
+    config::PluginConfig cfg;
+
+    const auto exp_pb_color = config::Color{255, 0, 0};
+    const auto exp_tx_color = config::Color{255, 0, 255};
+
+    ASSERT_TRUE(loader.parse(file.path(), cfg));
+    EXPECT_EQ(cfg.pushback_request_color.r, exp_pb_color.r);
+    EXPECT_EQ(cfg.pushback_request_color.g, exp_pb_color.g);
+    EXPECT_EQ(cfg.pushback_request_color.b, exp_pb_color.b);
+    EXPECT_EQ(cfg.taxi_request_color.r, exp_tx_color.r);
+    EXPECT_EQ(cfg.taxi_request_color.g, exp_tx_color.g);
+    EXPECT_EQ(cfg.taxi_request_color.b, exp_tx_color.b);
 }

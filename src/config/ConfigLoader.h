@@ -14,6 +14,7 @@ class ConfigLoader {
     std::uint32_t error_line_;  /* Defines the line number the error has occurred */
     std::string error_message_; /* The error message to print */
     bool parseColor(const std::string &block, COLORREF &color, std::uint32_t line);
+    bool parseColor(const std::string &block, Color &color, std::uint32_t line);
 
    public:
     ConfigLoader();
