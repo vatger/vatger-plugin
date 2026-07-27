@@ -31,13 +31,20 @@ std::optional<std::string> AuthService::getToken() {
 
 AuthFlowResult AuthService::startAuthFlow() {
     std::shared_lock lock(config_mutex_);
+    const std::unordered_map<std::string, std::string> headers = {{"Content-Type", "application/json"}};
+    const auto response = m_restClient->post(m_baseUrl + "/api/v1/plugin-token/start", "", headers);
 
     if (response.statusCode != 200) {
         return AuthFlowResult::error(AuthFlowStatus::NetworkError,
                                      "Server returned " + std::to_string(response.statusCode));
     }
 
-    m_pluginTokenStartDTO = json::parse(response.body).get<PluginTokenStartDTO>();
+    try {
+        m_pluginTokenStartDTO = json::parse(response.body).get<PluginTokenStartDTO>();
+    } catch (const json::exception& e) {
+        return AuthFlowResult::error(AuthFlowStatus::ParseError,
+                                     std::string("Failed to parse start response: ") + e.what());
+    }
 
     if (!m_pluginTokenStartDTO.has_value()) {
         return AuthFlowResult::error(AuthFlowStatus::ParseError, "Failed to parse start response");
@@ -63,7 +70,14 @@ void AuthService::validateToken() {
         return;
     }
 
-    const auto response_dto = json::parse(response.body).get<PluginTokenIntrospectionDTO>();
+    PluginTokenIntrospectionDTO response_dto;
+    try {
+        response_dto = json::parse(response.body).get<PluginTokenIntrospectionDTO>();
+    } catch (const json::exception& e) {
+        m_token.reset();
+        return;
+    }
+
     if (!response_dto.active) {
         m_token.reset();
     }
@@ -74,6 +88,7 @@ void AuthService::pollToken(std::stop_token stopToken, PluginTokenStartDTO dto) 
     body["secret"] = dto.pollingSecret;
     const std::string bodyStr = body.dump();
     const std::string pollingUrl = dto.pollingUrl;
+    const std::unordered_map<std::string, std::string> headers = {{"Content-Type", "application/json"}};
 
     while (!stopToken.stop_requested()) {
         {
@@ -83,8 +98,18 @@ void AuthService::pollToken(std::stop_token stopToken, PluginTokenStartDTO dto) 
 
         if (stopToken.stop_requested()) break;
 
-        const auto response = m_restClient->post(pollingUrl, bodyStr);
-        const auto response_dto = json::parse(response.body).get<PluginTokenPollDTO>();
+        const auto response = m_restClient->post(pollingUrl, bodyStr, headers);
+
+        if (response.statusCode != 200) {
+            continue;
+        }
+
+        PluginTokenPollDTO response_dto;
+        try {
+            response_dto = json::parse(response.body).get<PluginTokenPollDTO>();
+        } catch (const json::exception& e) {
+            continue;
+        }
 
         if (!response_dto.ready) continue;
 
